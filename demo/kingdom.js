@@ -1468,7 +1468,9 @@
     elements.headerLocation.textContent =
       mapNodes.find((node) => node.id === nodeId)?.name || "Sınır Kalesi";
     elements.restart.textContent = "Seferden Çık";
-    if (typeof startGame === "function") startGame();
+    if (typeof startGame === "function") {
+      startGame({ skipToBattle: true });
+    }
   };
 
   const recordBattle = (payload) => {
@@ -1522,7 +1524,9 @@
 
   const retryBattle = () => {
     document.querySelector("#outcomeScreen").hidden = true;
-    if (typeof startGame === "function") startGame();
+    if (typeof startGame === "function") {
+      startGame({ skipToBattle: true });
+    }
   };
 
   const getBattleLoadout = () => {

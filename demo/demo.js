@@ -773,19 +773,19 @@ function spawnEnemyWave(waveNumber) {
   const laneB = 345 + Math.random() * 100;
 
   if (waveNumber === 1) {
-    spawnGroup("enemy", "enemyInfantry", 7, 920, laneA, 78);
-    spawnGroup("enemy", "enemyArcher", 2, 950, laneB, 54);
+    spawnGroup("enemy", "enemyInfantry", 7, 790, laneA, 78);
+    spawnGroup("enemy", "enemyArcher", 2, 845, laneB, 54);
   } else if (waveNumber === 2) {
-    spawnGroup("enemy", "enemyInfantry", 8, 935, laneB, 90);
-    spawnGroup("enemy", "enemyArcher", 3, 965, laneA, 70);
+    spawnGroup("enemy", "enemyInfantry", 8, 840, laneB, 90);
+    spawnGroup("enemy", "enemyArcher", 3, 900, laneA, 70);
   } else if (waveNumber === 3) {
-    spawnGroup("enemy", "ram", 1, 955, 280, 10);
-    spawnGroup("enemy", "enemyInfantry", 9, 930, laneA, 105);
-    spawnGroup("enemy", "enemyArcher", 3, 970, laneB, 70);
+    spawnGroup("enemy", "ram", 1, 910, 280, 10);
+    spawnGroup("enemy", "enemyInfantry", 9, 850, laneA, 105);
+    spawnGroup("enemy", "enemyArcher", 3, 920, laneB, 70);
   } else {
-    spawnGroup("enemy", "enemyInfantry", 10, 925, laneB, 115);
-    spawnGroup("enemy", "enemyArcher", 4, 970, laneA, 85);
-    spawnGroup("enemy", "ram", 1, 975, 330, 10);
+    spawnGroup("enemy", "enemyInfantry", 10, 855, laneB, 115);
+    spawnGroup("enemy", "enemyArcher", 4, 925, laneA, 85);
+    spawnGroup("enemy", "ram", 1, 940, 330, 10);
   }
 
   battle.wave = waveNumber;
@@ -831,8 +831,10 @@ async function startBattle() {
     wave: 0,
     totalEnemies: 0,
     kills: 0,
+    clashes: 0,
+    firstClash: false,
     fortressHp: clamp(88 + state.stats.savunma * 0.18, 88, 112),
-    rally: { x: 500, y: 285 },
+    rally: { x: 475, y: 285 },
     cooldowns: Object.fromEntries(battleOrders.map((order) => [order.id, 0])),
     orderRefreshTimer: 0,
     message: "Düşman öncüleri geçide giriyor.",
@@ -841,8 +843,9 @@ async function startBattle() {
 
   elements.battleCountdownValue.textContent = "3";
 
-  spawnGroup("friendly", "infantry", 7, 165, 285, 100);
-  spawnGroup("friendly", "archer", 3, 115, 315, 75);
+  spawnGroup("friendly", "infantry", 8, 245, 285, 100);
+  spawnGroup("friendly", "archer", 4, 185, 315, 75);
+  spawnGroup("friendly", "cavalry", 2, 205, 210, 42);
 
   if (state.flags.has("commander-force")) {
     spawnGroup("friendly", "cavalry", 2, 110, 210, 38);
@@ -859,10 +862,11 @@ async function startBattle() {
 
   spawnEnemyWave(1);
   drawBattle();
+  updateBattleHud();
   renderBattleOrders();
 
   const currentBattle = battle;
-  [2, 1, 0].forEach((value, index) => {
+  [1, 0].forEach((value, index) => {
     window.setTimeout(
       () => {
         if (battle !== currentBattle) return;
@@ -876,7 +880,7 @@ async function startBattle() {
         renderBattleOrders();
         battle.frameId = requestAnimationFrame(battleLoop);
       },
-      (index + 1) * 750,
+      (index + 1) * 650,
     );
   });
 }
@@ -973,7 +977,7 @@ function updateUnit(unit, delta) {
   const opponents = battle.units.filter(
     (candidate) => !candidate.dead && candidate.team !== unit.team,
   );
-  const acquisition = unit.ranged ? 270 : unit.cavalry ? 250 : 205;
+  const acquisition = unit.ranged ? 690 : unit.cavalry ? 720 : 650;
   const target = nearestUnit(unit, opponents, acquisition);
 
   if (target) {
@@ -1059,6 +1063,12 @@ function nearestUnit(origin, candidates, maxDistance) {
 function attackUnit(attacker, target) {
   attacker.attackTimer = attacker.attackDelay;
   attacker.attackFlash = 0.14;
+  battle.clashes += 1;
+  if (!battle.firstClash) {
+    battle.firstClash = true;
+    battle.message = "HATLAR ÇARPIŞTI · Askerler yakın muharebeye girdi!";
+    battle.messageTimer = 3.2;
+  }
 
   if (attacker.ranged) {
     const distance = Math.hypot(target.x - attacker.x, target.y - attacker.y);
@@ -1832,9 +1842,20 @@ function completeGame() {
   elements.playAgainButton.focus();
 }
 
-function startGame() {
+function startGame(options = {}) {
   stopBattle();
   state = initialState();
+  if (options.skipToBattle) {
+    state.turn = 3;
+    state.stats.savunma += 8;
+    state.stats.istihbarat += 12;
+    state.stats.ittifak += 8;
+    state.history.push({
+      time: "Şafak Öncesi",
+      copy:
+        "Sefer ordusu Karacahisar önüne ulaştı. Birlikler doğrudan hücum düzenine geçti.",
+    });
+  }
   transitionLocked = false;
   elements.openingScreen.hidden = true;
   elements.outcomeScreen.hidden = true;
