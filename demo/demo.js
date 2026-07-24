@@ -29,6 +29,12 @@ const initialState = () => ({
 let state = initialState();
 let transitionLocked = false;
 let battle = null;
+const unitSpriteSheet =
+  typeof Image === "undefined" ? null : new Image();
+if (unitSpriteSheet) {
+  unitSpriteSheet.decoding = "async";
+  unitSpriteSheet.src = "./assets/unit-sprites.png";
+}
 
 const clamp = (value, min = 0, max = 100) =>
   Math.max(min, Math.min(max, Math.round(value)));
@@ -512,6 +518,38 @@ const unitTypes = {
     attackDelay: 1.55,
     radius: 15,
     ram: true,
+  },
+};
+
+const spriteFrames = {
+  infantry: { x: 0, y: 0, width: 420, height: 458, drawWidth: 50, drawHeight: 66 },
+  archer: { x: 420, y: 0, width: 400, height: 458, drawWidth: 52, drawHeight: 68 },
+  cavalry: { x: 790, y: 0, width: 550, height: 458, drawWidth: 86, drawHeight: 70 },
+  ally: { x: 1320, y: 0, width: 397, height: 458, drawWidth: 53, drawHeight: 68 },
+  enemyInfantry: {
+    x: 0,
+    y: 458,
+    width: 420,
+    height: 458,
+    drawWidth: 50,
+    drawHeight: 66,
+  },
+  enemyArcher: {
+    x: 420,
+    y: 458,
+    width: 400,
+    height: 458,
+    drawWidth: 52,
+    drawHeight: 68,
+  },
+  ram: { x: 740, y: 458, width: 580, height: 458, drawWidth: 94, drawHeight: 62 },
+  heavyEnemy: {
+    x: 1290,
+    y: 458,
+    width: 427,
+    height: 458,
+    drawWidth: 54,
+    drawHeight: 70,
   },
 };
 
@@ -1139,22 +1177,83 @@ function drawUnit(context, unit) {
   context.save();
   context.translate(unit.x, unit.y);
   if (unit.dead) {
-    context.globalAlpha = clamp(unit.deathTimer / 0.45, 0, 1);
+    context.globalAlpha = clampFloat(unit.deathTimer / 0.45);
   }
-  context.scale(unit.facing, 1);
 
   const friendly = unit.team === "friendly";
+  const spriteReady =
+    unitSpriteSheet?.complete && unitSpriteSheet.naturalWidth > 0;
+  const frameKey =
+    unit.type === "enemyInfantry" && unit.id % 4 === 0
+      ? "heavyEnemy"
+      : unit.type;
+  const frame = spriteFrames[frameKey];
+  const visualRadius = spriteReady
+    ? Math.max(15, (frame?.drawWidth ?? 42) * 0.32)
+    : unit.radius * 1.35;
+
+  context.fillStyle = "rgba(0, 0, 0, 0.48)";
+  context.beginPath();
+  context.ellipse(0, 9, visualRadius, 6, 0, 0, Math.PI * 2);
+  context.fill();
+
+  if (unit.attackFlash > 0) {
+    context.globalAlpha = 0.2 + unit.attackFlash * 1.8;
+    context.fillStyle = friendly ? "#f2d995" : "#d25d4d";
+    context.beginPath();
+    context.arc(0, -9, visualRadius * 1.3, 0, Math.PI * 2);
+    context.fill();
+    context.globalAlpha = 1;
+  }
+
+  context.save();
+  context.scale(unit.facing, 1);
+  const bob = Math.sin(battle.elapsed * 8 + unit.id * 0.91) * 1.4;
+  const lunge = unit.attackFlash * (unit.cavalry ? 70 : 42);
+  context.translate(lunge, bob);
+
+  if (spriteReady && frame) {
+    context.imageSmoothingEnabled = true;
+    context.imageSmoothingQuality = "high";
+    context.drawImage(
+      unitSpriteSheet,
+      frame.x,
+      frame.y,
+      frame.width,
+      frame.height,
+      -frame.drawWidth / 2,
+      -frame.drawHeight + 13,
+      frame.drawWidth,
+      frame.drawHeight,
+    );
+  } else {
+    drawFallbackUnit(context, unit, friendly);
+  }
+  context.restore();
+
+  if (unit.hp < unit.maxHp) {
+    const barWidth = unit.ram ? 38 : unit.cavalry ? 32 : 26;
+    const barY = spriteReady && frame ? -frame.drawHeight + 7 : -23;
+    context.fillStyle = "rgba(0,0,0,0.65)";
+    context.fillRect(-barWidth / 2, barY, barWidth, 4);
+    context.fillStyle = friendly ? "#65c4b3" : "#d25d4d";
+    context.fillRect(
+      -barWidth / 2,
+      barY,
+      barWidth * clampFloat(unit.hp / unit.maxHp),
+      4,
+    );
+  }
+  context.restore();
+}
+
+function drawFallbackUnit(context, unit, friendly) {
   const bodyColor = unit.ally
     ? "#c5dbea"
     : friendly
       ? "#65c4b3"
       : "#d25d4d";
   const metalColor = friendly ? "#f2d995" : "#e2b0a8";
-
-  context.fillStyle = "rgba(0, 0, 0, 0.35)";
-  context.beginPath();
-  context.ellipse(0, 7, unit.radius * 1.35, 4.2, 0, 0, Math.PI * 2);
-  context.fill();
 
   if (unit.ram) {
     context.fillStyle = "#6d4a2f";
@@ -1167,7 +1266,10 @@ function drawUnit(context, unit) {
       context.arc(x, 10, 5, 0, Math.PI * 2);
       context.fill();
     });
-  } else if (unit.cavalry) {
+    return;
+  }
+
+  if (unit.cavalry) {
     context.fillStyle = "#594432";
     context.beginPath();
     context.ellipse(0, 1, 14, 7, 0, 0, Math.PI * 2);
@@ -1183,53 +1285,40 @@ function drawUnit(context, unit) {
     context.moveTo(4, -9);
     context.lineTo(18, -16 - unit.attackFlash * 22);
     context.stroke();
-  } else {
-    context.strokeStyle = bodyColor;
-    context.fillStyle = bodyColor;
-    context.lineWidth = 3.2;
+    return;
+  }
+
+  context.strokeStyle = bodyColor;
+  context.fillStyle = bodyColor;
+  context.lineWidth = 3.2;
+  context.beginPath();
+  context.moveTo(0, -7);
+  context.lineTo(0, 6);
+  context.moveTo(0, 4);
+  context.lineTo(-5, 12);
+  context.moveTo(0, 4);
+  context.lineTo(5, 12);
+  context.stroke();
+  context.beginPath();
+  context.arc(0, -11, 4.5, 0, Math.PI * 2);
+  context.fill();
+
+  context.strokeStyle = metalColor;
+  context.lineWidth = 2;
+  if (unit.ranged) {
     context.beginPath();
-    context.moveTo(0, -7);
-    context.lineTo(0, 6);
-    context.moveTo(0, 4);
-    context.lineTo(-5, 12);
-    context.moveTo(0, 4);
-    context.lineTo(5, 12);
+    context.arc(5, -2, 7, -1.2, 1.2);
     context.stroke();
     context.beginPath();
-    context.arc(0, -11, 4.5, 0, Math.PI * 2);
-    context.fill();
-
-    context.strokeStyle = metalColor;
-    context.lineWidth = 2;
-    if (unit.ranged) {
-      context.beginPath();
-      context.arc(5, -2, 7, -1.2, 1.2);
-      context.stroke();
-      context.beginPath();
-      context.moveTo(2, -8);
-      context.lineTo(9, 5);
-      context.stroke();
-    } else {
-      context.beginPath();
-      context.moveTo(1, -2);
-      context.lineTo(11 + unit.attackFlash * 24, -8);
-      context.stroke();
-    }
+    context.moveTo(2, -8);
+    context.lineTo(9, 5);
+    context.stroke();
+  } else {
+    context.beginPath();
+    context.moveTo(1, -2);
+    context.lineTo(11 + unit.attackFlash * 24, -8);
+    context.stroke();
   }
-
-  if (unit.hp < unit.maxHp) {
-    context.scale(unit.facing, 1);
-    context.fillStyle = "rgba(0,0,0,0.65)";
-    context.fillRect(-12, -23, 24, 3);
-    context.fillStyle = friendly ? "#65c4b3" : "#d25d4d";
-    context.fillRect(
-      -12,
-      -23,
-      24 * clampFloat(unit.hp / unit.maxHp),
-      3,
-    );
-  }
-  context.restore();
 }
 
 function drawProjectile(context, projectile) {
