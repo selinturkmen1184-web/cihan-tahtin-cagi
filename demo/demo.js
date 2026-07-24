@@ -29,11 +29,44 @@ const initialState = () => ({
 let state = initialState();
 let transitionLocked = false;
 let battle = null;
+let battleLoading = false;
 const unitSpriteSheet =
   typeof Image === "undefined" ? null : new Image();
 if (unitSpriteSheet) {
   unitSpriteSheet.decoding = "async";
-  unitSpriteSheet.src = "./assets/unit-sprites.png";
+  unitSpriteSheet.src = "./assets/unit-sprites.png?v=20260724-4";
+}
+
+function ensureUnitSpritesReady() {
+  if (globalThis.__CIHAN_TEST__) return Promise.resolve(true);
+  if (
+    unitSpriteSheet?.complete &&
+    unitSpriteSheet.naturalWidth > 0
+  ) {
+    return Promise.resolve(true);
+  }
+  if (!unitSpriteSheet) return Promise.resolve(false);
+
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (ready) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timeout);
+      resolve(ready);
+    };
+    const timeout = window.setTimeout(() => {
+      finish(
+        unitSpriteSheet.complete &&
+          unitSpriteSheet.naturalWidth > 0,
+      );
+    }, 6000);
+
+    unitSpriteSheet.onload = () => finish(true);
+    unitSpriteSheet.onerror = () => {
+      unitSpriteSheet.src = `./assets/unit-sprites.png?v=20260724-4&retry=${Date.now()}`;
+    };
+  });
 }
 
 const clamp = (value, min = 0, max = 100) =>
@@ -751,9 +784,28 @@ function spawnEnemyWave(waveNumber) {
   battle.messageTimer = 2.8;
 }
 
-function startBattle() {
-  if (battle?.active || state.battlePlayed) return;
+async function startBattle() {
+  if (battle?.active || state.battlePlayed || battleLoading) return;
+  battleLoading = true;
   stopBattle();
+
+  elements.battleStage.hidden = false;
+  elements.battleCountdown.hidden = false;
+  elements.battleCountdownValue.textContent = "…";
+  elements.battleMessage.textContent = "Zırhlı birlikler savaş alanına hazırlanıyor.";
+  const spritesReady = await ensureUnitSpritesReady();
+  battleLoading = false;
+
+  if (!spritesReady) {
+    elements.battleCountdownValue.textContent = "↻";
+    elements.battleMessage.textContent =
+      "Birlik görselleri yüklenemedi. Sayfayı yenileyerek tekrar dene.";
+    return;
+  }
+  if (state.turn !== 3 || state.battlePlayed) {
+    stopBattle();
+    return;
+  }
 
   const context = elements.battleCanvas.getContext("2d");
   battle = {
@@ -778,8 +830,6 @@ function startBattle() {
     messageTimer: 3,
   };
 
-  elements.battleStage.hidden = false;
-  elements.battleCountdown.hidden = false;
   elements.battleCountdownValue.textContent = "3";
 
   spawnGroup("friendly", "infantry", 7, 165, 285, 100);
