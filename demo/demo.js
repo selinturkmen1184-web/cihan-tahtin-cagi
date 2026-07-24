@@ -1,30 +1,39 @@
-const initialState = () => ({
-  turn: 0,
-  resources: {
-    erzak: 72,
-    moral: 64,
-    hazine: 58,
-    itibar: 46,
-  },
-  stats: {
-    savunma: 45,
-    istihbarat: 10,
-    ittifak: 0,
-    dusmanHasari: 0,
-    merhamet: 0,
-  },
-  flags: new Set(),
-  history: [
-    {
-      time: "Günbatımı",
-      copy: "Düşman ordusu Karacahisar Geçidi’nde görüldü.",
+const initialState = () => {
+  const loadout = globalThis.CihanKingdom?.getBattleLoadout?.() ?? {};
+  const flags = new Set();
+  if (loadout.formation === "defense") flags.add("reinforced");
+  if (loadout.formation === "assault") flags.add("commander-force");
+  if (loadout.heroIds?.includes("nizam")) flags.add("scouts");
+  if (loadout.heroIds?.includes("leyla")) flags.add("commander-diplomat");
+
+  return {
+    turn: 0,
+    resources: {
+      erzak: loadout.erzak ?? 72,
+      moral: loadout.moral ?? 64,
+      hazine: loadout.hazine ?? 58,
+      itibar: loadout.itibar ?? 46,
     },
-  ],
-  battlePower: null,
-  battleResult: null,
-  battlePlayed: false,
-  finalChoice: null,
-});
+    stats: {
+      savunma: 45 + (loadout.defenseBonus ?? 0),
+      istihbarat: loadout.heroIds?.includes("nizam") ? 18 : 10,
+      ittifak: loadout.heroIds?.includes("leyla") ? 12 : 0,
+      dusmanHasari: 0,
+      merhamet: 0,
+    },
+    flags,
+    history: [
+      {
+        time: "Günbatımı",
+        copy: "Düşman ordusu Karacahisar Geçidi’nde görüldü.",
+      },
+    ],
+    battlePower: null,
+    battleResult: null,
+    battlePlayed: false,
+    finalChoice: null,
+  };
+};
 
 let state = initialState();
 let transitionLocked = false;
@@ -1814,6 +1823,12 @@ function completeGame() {
   });
 
   elements.outcomeScreen.hidden = false;
+  globalThis.CihanKingdom?.recordBattle?.({
+    result: state.battleResult,
+    score,
+    battlePower: state.battlePower,
+    defense: state.stats.savunma,
+  });
   elements.playAgainButton.focus();
 }
 
@@ -1838,9 +1853,27 @@ function showOpening() {
   elements.startButton.focus();
 }
 
-elements.startButton.addEventListener("click", startGame);
-elements.playAgainButton.addEventListener("click", startGame);
-elements.restartButton.addEventListener("click", showOpening);
+elements.startButton.addEventListener("click", () => {
+  if (globalThis.CihanKingdom) {
+    globalThis.CihanKingdom.enterKingdom();
+    return;
+  }
+  startGame();
+});
+elements.playAgainButton.addEventListener("click", () => {
+  if (globalThis.CihanKingdom) {
+    globalThis.CihanKingdom.claimBattle();
+    return;
+  }
+  startGame();
+});
+elements.restartButton.addEventListener("click", () => {
+  if (globalThis.CihanKingdom && elements.openingScreen.hidden) {
+    globalThis.CihanKingdom.returnToKingdom("city");
+    return;
+  }
+  showOpening();
+});
 elements.battleCanvas.addEventListener("pointerdown", setBattleRally);
 
 document.addEventListener("keydown", (event) => {

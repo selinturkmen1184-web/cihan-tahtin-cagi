@@ -15,7 +15,8 @@
       href="./assets/unit-sprites.png?v=20260724-4"
       fetchpriority="high"
     />
-    <link rel="stylesheet" href="./demo.css?v=20260724-4" />
+    <link rel="stylesheet" href="./demo.css?v=20260724-5" />
+    <link rel="stylesheet" href="./kingdom.css?v=20260724-5" />
   </head>
   <body>
     <div class="grain" aria-hidden="true"></div>
@@ -26,18 +27,82 @@
         <small>TAHTIN ÇAĞI</small>
       </a>
       <div class="scenario-label">
-        <span>Oynanabilir ön çalışma</span>
-        <strong>Sınır Kalesi</strong>
+        <span id="headerModeLabel">Yaşayan strateji demosu</span>
+        <strong id="headerLocationLabel">Payitaht</strong>
       </div>
       <div class="header-actions">
         <button class="quiet-button" id="restartButton" type="button">
-          Yeni Sefer
+          Tahta Dön
         </button>
         <a class="quiet-button" href="../">Vizyon Sitesi</a>
       </div>
     </header>
 
-    <main class="game-shell">
+    <main class="kingdom-shell" id="kingdomShell" hidden>
+      <section class="kingdom-commandbar" aria-label="Hükümdarlık durumu">
+        <div class="ruler-seal" aria-hidden="true">ST</div>
+        <div class="ruler-copy">
+          <span>SELİN HATUN · CİHAN HÜKÜMDARI</span>
+          <strong>Payitaht <i>Seviye <b id="palaceLevel">6</b></i></strong>
+        </div>
+        <div class="kingdom-power">
+          <span>DEVLET GÜCÜ</span>
+          <strong id="kingdomPower">12.840</strong>
+        </div>
+        <div class="kingdom-resources" id="kingdomResources">
+          <article data-meta-resource="food">
+            <span class="resource-glyph">●</span>
+            <div><small>ERZAK</small><strong id="metaFood">18.400</strong></div>
+          </article>
+          <article data-meta-resource="wood">
+            <span class="resource-glyph">╱</span>
+            <div><small>KERES.</small><strong id="metaWood">11.200</strong></div>
+          </article>
+          <article data-meta-resource="stone">
+            <span class="resource-glyph">◆</span>
+            <div><small>TAŞ</small><strong id="metaStone">8.600</strong></div>
+          </article>
+          <article data-meta-resource="gold">
+            <span class="resource-glyph">◉</span>
+            <div><small>ALTIN</small><strong id="metaGold">5.400</strong></div>
+          </article>
+        </div>
+        <button
+          class="notification-button"
+          id="notificationButton"
+          type="button"
+          aria-label="Bildirimleri aç"
+        >
+          <span aria-hidden="true">♢</span><i id="notificationCount">3</i>
+        </button>
+      </section>
+
+      <nav class="kingdom-nav" id="kingdomNav" aria-label="Oyun bölümleri">
+        <button class="active" data-screen="city" type="button">
+          <span>♜</span>Başkent
+        </button>
+        <button data-screen="map" type="button"><span>⌖</span>Dünya</button>
+        <button data-screen="army" type="button"><span>⚔</span>Ordu</button>
+        <button data-screen="heroes" type="button">
+          <span>♞</span>Kahramanlar
+        </button>
+        <button data-screen="quests" type="button">
+          <span>◇</span>Görevler <i id="questBadge">2</i>
+        </button>
+        <button data-screen="alliance" type="button">
+          <span>⚑</span>İttifak
+        </button>
+        <button data-screen="season" type="button"><span>✦</span>Sezon</button>
+      </nav>
+
+      <section
+        class="kingdom-content"
+        id="kingdomContent"
+        aria-live="polite"
+      ></section>
+    </main>
+
+    <main class="game-shell" id="battleShell" hidden>
       <section class="campaign-strip" aria-label="Sefer ilerlemesi">
         <div class="campaign-copy">
           <p id="chapterLabel">BÖLÜM 01 · ALARM</p>
@@ -227,24 +292,24 @@
         <p class="eyebrow">CİHAN · OYNANABİLİR ÖN ÇALIŞMA</p>
         <div class="gold-rule"></div>
         <h2>
-          <span>SINIRDA</span>
-          SON GECE
+          <span>TAHTINI</span>
+          KUR
         </h2>
         <p class="opening-lead">
-          Beş karar. Bir kuşatma. Ardında bırakacağın tek bir miras.
+          Şehrini büyüt. Ordunu kur. Haritaya hükmet.
         </p>
         <div class="mission-card">
-          <span>GÖREV</span>
+          <span>OYUN DÖNGÜSÜ</span>
           <p>
-            Şafak sökene kadar Sınır Kalesi’ni koru. Erzağı, morali, hazineyi
-            ve itibarını dengede tut.
+            Kaynak üret, binaları geliştir, asker yetiştir, kahramanlarını
+            güçlendir ve dünya haritasından sefere çık.
           </p>
         </div>
         <button class="start-button" id="startButton" type="button">
-          <span>SEFERİ BAŞLAT</span>
+          <span>HÜKÜMDARLIĞA BAŞLA</span>
           <i aria-hidden="true">→</i>
         </button>
-        <small>Yaklaşık 3–5 dakika · Tarayıcı demosu</small>
+        <small>Kalıcı kayıt · Canlı ekonomi · Oynanabilir savaş</small>
       </div>
     </div>
 
@@ -269,11 +334,34 @@
         <blockquote id="legacyQuote"></blockquote>
         <div class="outcome-actions">
           <button class="start-button" id="playAgainButton" type="button">
-            Yeniden Oyna
+            Ganimeti Başkente Taşı
           </button>
-          <a class="secondary-link" href="../">Oyun Vizyonuna Dön</a>
+          <button class="secondary-link button-link" id="retryBattleButton" type="button">
+            Yeniden Savaş
+          </button>
         </div>
       </div>
+    </div>
+
+    <div class="kingdom-modal" id="kingdomModal" hidden>
+      <button
+        class="modal-scrim"
+        id="modalScrim"
+        type="button"
+        aria-label="Pencereyi kapat"
+      ></button>
+      <section
+        class="kingdom-modal-card"
+        id="kingdomModalCard"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Oyun işlemi"
+      ></section>
+    </div>
+
+    <div class="game-toast" id="gameToast" role="status" aria-live="polite" hidden>
+      <span id="toastIcon">✓</span>
+      <p id="toastText">Emir yerine getirildi.</p>
     </div>
 
     <noscript>
@@ -282,6 +370,7 @@
       </div>
     </noscript>
 
-    <script src="./demo.js?v=20260724-4"></script>
+    <script src="./demo.js?v=20260724-5"></script>
+    <script src="./kingdom.js?v=20260724-5"></script>
   </body>
 </html>
