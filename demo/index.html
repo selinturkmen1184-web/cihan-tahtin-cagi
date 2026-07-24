@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="CİHAN: Tahtın Çağı için tarayıcıda oynanabilen sınır kalesi kuşatma demosu."
+    />
+    <meta name="theme-color" content="#080b10" />
+    <title>CİHAN: Sınır Kalesi — Oynanabilir Demo</title>
+    <link rel="stylesheet" href="./demo.css" />
+  </head>
+  <body>
+    <div class="grain" aria-hidden="true"></div>
+
+    <header class="game-header">
+      <a class="brand" href="../" aria-label="Cihan ana sayfasına dön">
+        <span>CİHAN</span>
+        <small>TAHTIN ÇAĞI</small>
+      </a>
+      <div class="scenario-label">
+        <span>Oynanabilir ön çalışma</span>
+        <strong>Sınır Kalesi</strong>
+      </div>
+      <div class="header-actions">
+        <button class="quiet-button" id="restartButton" type="button">
+          Yeni Sefer
+        </button>
+        <a class="quiet-button" href="../">Vizyon Sitesi</a>
+      </div>
+    </header>
+
+    <main class="game-shell">
+      <section class="campaign-strip" aria-label="Sefer ilerlemesi">
+        <div class="campaign-copy">
+          <p id="chapterLabel">BÖLÜM 01 · ALARM</p>
+          <h1 id="campaignTitle">Sınırda Son Gece</h1>
+        </div>
+        <div class="turn-track">
+          <div class="turn-meta">
+            <span id="turnCounter">KARAR 1 / 5</span>
+            <span id="timeLabel">GÜNBATIMI</span>
+          </div>
+          <ol id="turnPips" aria-label="Karar ilerlemesi">
+            <li class="active"><span>1</span></li>
+            <li><span>2</span></li>
+            <li><span>3</span></li>
+            <li><span>4</span></li>
+            <li><span>5</span></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="game-grid">
+        <div class="world-panel">
+          <div class="world-image" id="worldImage">
+            <div class="world-vignette" aria-hidden="true"></div>
+            <div class="weather weather-one" aria-hidden="true"></div>
+            <div class="weather weather-two" aria-hidden="true"></div>
+
+            <div class="map-status enemy-status">
+              <span>DÜŞMAN ORDUSU</span>
+              <strong id="enemyStrength">100%</strong>
+              <div class="mini-bar">
+                <i id="enemyBar" style="width: 100%"></i>
+              </div>
+            </div>
+
+            <div class="map-status fortress-status">
+              <span>SINIR KALESİ</span>
+              <strong id="fortressStrength">45%</strong>
+              <div class="mini-bar friendly">
+                <i id="fortressBar" style="width: 45%"></i>
+              </div>
+            </div>
+
+            <div class="map-marker fortress-marker">
+              <span class="marker-pulse"></span>
+              <i>KALE</i>
+            </div>
+            <div class="map-marker enemy-marker">
+              <span class="marker-pulse"></span>
+              <i>DÜŞMAN</i>
+            </div>
+            <div class="map-marker scout-marker" id="scoutMarker">
+              <span class="marker-pulse"></span>
+              <i>KEŞİF</i>
+            </div>
+            <div class="map-marker ally-marker" id="allyMarker">
+              <span class="marker-pulse"></span>
+              <i>TAKVİYE</i>
+            </div>
+
+            <div class="world-caption">
+              <span id="locationLabel">BATI SINIRI · KARACAHİSAR GEÇİDİ</span>
+              <p id="worldCaption">
+                Düşman sancakları ufukta belirdi. Kale, yardım gelene kadar
+                dayanmak zorunda.
+              </p>
+            </div>
+          </div>
+
+          <div class="resource-board" aria-label="Sefer kaynakları">
+            <article class="resource-card" data-resource="erzak">
+              <div>
+                <span>ERZAK</span>
+                <strong id="resourceErzak">72</strong>
+              </div>
+              <div class="resource-bar"><i id="barErzak"></i></div>
+            </article>
+            <article class="resource-card" data-resource="moral">
+              <div>
+                <span>MORAL</span>
+                <strong id="resourceMoral">64</strong>
+              </div>
+              <div class="resource-bar"><i id="barMoral"></i></div>
+            </article>
+            <article class="resource-card" data-resource="hazine">
+              <div>
+                <span>HAZİNE</span>
+                <strong id="resourceHazine">58</strong>
+              </div>
+              <div class="resource-bar"><i id="barHazine"></i></div>
+            </article>
+            <article class="resource-card" data-resource="itibar">
+              <div>
+                <span>İTİBAR</span>
+                <strong id="resourceItibar">46</strong>
+              </div>
+              <div class="resource-bar"><i id="barItibar"></i></div>
+            </article>
+          </div>
+        </div>
+
+        <aside class="decision-panel" aria-labelledby="decisionTitle">
+          <div class="decision-heading">
+            <span id="sceneEyebrow">ALARM ÇANLARI</span>
+            <h2 id="decisionTitle">İlk emrin ne olacak?</h2>
+            <p id="sceneNarrative">
+              Gözcüler üç düşman kolunun geçide yaklaştığını bildiriyor. Gece
+              çökmeden tek bir hazırlığa zaman var.
+            </p>
+          </div>
+
+          <div class="advisor-card">
+            <div class="advisor-portrait" id="advisorPortrait" aria-hidden="true">
+              <span>N</span>
+            </div>
+            <div>
+              <span id="advisorName">NİZAM · BAŞVEKİL</span>
+              <p id="advisorText">
+                “Hünkârım, ilk emriniz yalnız kaleyi değil, askerlerin size
+                duyduğu güveni de şekillendirecek.”
+              </p>
+            </div>
+          </div>
+
+          <div class="choice-list" id="choiceList" aria-live="polite"></div>
+
+          <div class="last-result" id="lastResult" aria-live="polite" hidden>
+            <span>EMRİNİN SONUCU</span>
+            <p id="lastResultText"></p>
+          </div>
+        </aside>
+      </section>
+
+      <section class="chronicle-panel" aria-label="Sefer günlüğü">
+        <div class="chronicle-heading">
+          <span>SEFER GÜNLÜĞÜ</span>
+          <strong id="strategyLabel">Henüz bir yol seçilmedi</strong>
+        </div>
+        <ol id="chronicleList">
+          <li>
+            <time>Günbatımı</time>
+            <p>Düşman ordusu Karacahisar Geçidi’nde görüldü.</p>
+          </li>
+        </ol>
+      </section>
+    </main>
+
+    <div class="opening-screen" id="openingScreen">
+      <div class="opening-backdrop" aria-hidden="true"></div>
+      <div class="opening-copy">
+        <p class="eyebrow">CİHAN · OYNANABİLİR ÖN ÇALIŞMA</p>
+        <div class="gold-rule"></div>
+        <h2>
+          <span>SINIRDA</span>
+          SON GECE
+        </h2>
+        <p class="opening-lead">
+          Beş karar. Bir kuşatma. Ardında bırakacağın tek bir miras.
+        </p>
+        <div class="mission-card">
+          <span>GÖREV</span>
+          <p>
+            Şafak sökene kadar Sınır Kalesi’ni koru. Erzağı, morali, hazineyi
+            ve itibarını dengede tut.
+          </p>
+        </div>
+        <button class="start-button" id="startButton" type="button">
+          <span>SEFERİ BAŞLAT</span>
+          <i aria-hidden="true">→</i>
+        </button>
+        <small>Yaklaşık 3–5 dakika · Tarayıcı demosu</small>
+      </div>
+    </div>
+
+    <div
+      class="outcome-screen"
+      id="outcomeScreen"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="outcomeTitle"
+      hidden
+    >
+      <div class="outcome-backdrop" aria-hidden="true"></div>
+      <div class="outcome-card">
+        <p class="eyebrow" id="outcomeEyebrow">SEFER TAMAMLANDI</p>
+        <h2 id="outcomeTitle">Kale Ayakta</h2>
+        <p id="outcomeCopy"></p>
+        <div class="legacy-score">
+          <span>MİRAS PUANI</span>
+          <strong id="legacyScore">0</strong>
+        </div>
+        <div class="outcome-stats" id="outcomeStats"></div>
+        <blockquote id="legacyQuote"></blockquote>
+        <div class="outcome-actions">
+          <button class="start-button" id="playAgainButton" type="button">
+            Yeniden Oyna
+          </button>
+          <a class="secondary-link" href="../">Oyun Vizyonuna Dön</a>
+        </div>
+      </div>
+    </div>
+
+    <noscript>
+      <div class="noscript">
+        Bu oynanabilir demo için tarayıcında JavaScript açık olmalı.
+      </div>
+    </noscript>
+
+    <script src="./demo.js"></script>
+  </body>
+</html>
