@@ -22,14 +22,19 @@ const initialState = () => ({
   ],
   battlePower: null,
   battleResult: null,
+  battlePlayed: false,
   finalChoice: null,
 });
 
 let state = initialState();
 let transitionLocked = false;
+let battle = null;
 
 const clamp = (value, min = 0, max = 100) =>
   Math.max(min, Math.min(max, Math.round(value)));
+
+const clampFloat = (value, min = 0, max = 1) =>
+  Math.max(min, Math.min(max, value));
 
 const changeResource = (name, amount) => {
   state.resources[name] = clamp(state.resources[name] + amount);
@@ -408,6 +413,16 @@ const elements = {
   lastResultText: document.querySelector("#lastResultText"),
   locationLabel: document.querySelector("#locationLabel"),
   worldCaption: document.querySelector("#worldCaption"),
+  battleStage: document.querySelector("#battleStage"),
+  battleCanvas: document.querySelector("#battleCanvas"),
+  battleFortressValue: document.querySelector("#battleFortressValue"),
+  battleFortressMeter: document.querySelector("#battleFortressMeter"),
+  battleEnemyValue: document.querySelector("#battleEnemyValue"),
+  battleEnemyMeter: document.querySelector("#battleEnemyMeter"),
+  battleTimer: document.querySelector("#battleTimer"),
+  battleMessage: document.querySelector("#battleMessage"),
+  battleCountdown: document.querySelector("#battleCountdown"),
+  battleCountdownValue: document.querySelector("#battleCountdownValue"),
   scoutMarker: document.querySelector("#scoutMarker"),
   allyMarker: document.querySelector("#allyMarker"),
   enemyStrength: document.querySelector("#enemyStrength"),
@@ -435,6 +450,923 @@ const elements = {
     itibar: document.querySelector("#barItibar"),
   },
 };
+
+const unitTypes = {
+  infantry: {
+    hp: 62,
+    speed: 47,
+    range: 20,
+    damage: 12,
+    attackDelay: 0.72,
+    radius: 9,
+  },
+  archer: {
+    hp: 38,
+    speed: 35,
+    range: 145,
+    damage: 10,
+    attackDelay: 1.18,
+    radius: 8,
+    ranged: true,
+  },
+  cavalry: {
+    hp: 88,
+    speed: 82,
+    range: 24,
+    damage: 19,
+    attackDelay: 0.78,
+    radius: 12,
+    cavalry: true,
+  },
+  ally: {
+    hp: 68,
+    speed: 54,
+    range: 22,
+    damage: 14,
+    attackDelay: 0.76,
+    radius: 9,
+    ally: true,
+  },
+  enemyInfantry: {
+    hp: 48,
+    speed: 39,
+    range: 19,
+    damage: 9,
+    attackDelay: 0.82,
+    radius: 9,
+  },
+  enemyArcher: {
+    hp: 34,
+    speed: 31,
+    range: 138,
+    damage: 7,
+    attackDelay: 1.3,
+    radius: 8,
+    ranged: true,
+  },
+  ram: {
+    hp: 145,
+    speed: 21,
+    range: 34,
+    damage: 18,
+    attackDelay: 1.55,
+    radius: 15,
+    ram: true,
+  },
+};
+
+const battleOrders = [
+  {
+    id: "infantry",
+    title: "Piyade Bölüğü",
+    description: "Beş kılıçlı askeri seçtiğin hücum hattına çıkar.",
+    effectLabel: "8 Erzak · 4 sn",
+    resource: "erzak",
+    cost: 8,
+    cooldown: 4,
+    deploy: () =>
+      spawnGroup("friendly", "infantry", 5, 145, battle.rally.y, 38),
+  },
+  {
+    id: "archer",
+    title: "Okçu Birliği",
+    description: "Üç okçu sur gerisinden düşmanı menzile alır.",
+    effectLabel: "6 Hazine · 6 sn",
+    resource: "hazine",
+    cost: 6,
+    cooldown: 6,
+    deploy: () =>
+      spawnGroup("friendly", "archer", 3, 120, battle.rally.y, 42),
+  },
+  {
+    id: "cavalry",
+    title: "Süvari Hücumu",
+    description: "Dört atlı düşman hattını yararak en yakın hedefe saldırır.",
+    effectLabel: "10 Moral · 8 sn",
+    resource: "moral",
+    cost: 10,
+    cooldown: 8,
+    deploy: () =>
+      spawnGroup("friendly", "cavalry", 4, 118, battle.rally.y, 46),
+  },
+  {
+    id: "allies",
+    title: "Müttefik Sancağı",
+    description: "İttifak kuvvetlerini kuzey hattından savaşa çağır.",
+    effectLabel: "8 İtibar · 10 sn",
+    resource: "itibar",
+    cost: 8,
+    cooldown: 10,
+    requirement: () => state.stats.ittifak >= 20,
+    locked: "20 ittifak gerekiyor",
+    deploy: () =>
+      spawnGroup("friendly", "ally", 5, 155, battle.rally.y - 80, 54),
+  },
+];
+
+function renderBattleOrders() {
+  elements.choiceList.replaceChildren();
+  elements.choiceList.classList.add("battle-orders");
+
+  battleOrders.forEach((order, index) => {
+    const requirementMet = order.requirement ? order.requirement() : true;
+    const resourceMet = state.resources[order.resource] >= order.cost;
+    const remaining = battle?.cooldowns?.[order.id] ?? 0;
+    const battleActive = Boolean(battle?.active);
+    const available =
+      requirementMet && resourceMet && remaining <= 0 && battleActive;
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "choice-button battle-order";
+    button.classList.toggle("ready", available);
+    button.classList.toggle("cooldown", remaining > 0);
+    button.disabled = !available;
+
+    const number = document.createElement("span");
+    number.className = "choice-index";
+    number.textContent = String(index + 1).padStart(2, "0");
+
+    const copy = document.createElement("span");
+    copy.className = "choice-copy";
+    const title = document.createElement("strong");
+    title.textContent = order.title;
+    const description = document.createElement("small");
+    description.textContent = order.description;
+    copy.append(title, description);
+
+    const effect = document.createElement("span");
+    effect.className = "choice-effect";
+    effect.textContent = !requirementMet
+      ? order.locked
+      : remaining > 0
+        ? `${Math.ceil(remaining)} sn bekle`
+        : !resourceMet
+          ? `${order.cost} ${order.resource} gerekiyor`
+          : order.effectLabel;
+
+    button.append(number, copy, effect);
+    button.addEventListener("click", () => deployBattleOrder(order));
+    elements.choiceList.append(button);
+  });
+
+  const progress = document.createElement("div");
+  progress.className = "battle-progress-copy";
+  const heading = document.createElement("strong");
+  heading.textContent = battle?.active
+    ? "SAVAŞ DEVAM EDİYOR"
+    : "BİRLİKLER HAZIRLANIYOR";
+  const copy = document.createElement("span");
+  copy.textContent = battle?.active
+    ? "Haritaya dokunarak hücum hattını değiştir. 1–4 tuşlarıyla birlik çıkarabilirsin."
+    : "Borular çaldığında birlik emirleri açılacak.";
+  progress.append(heading, copy);
+  elements.choiceList.append(progress);
+}
+
+function deployBattleOrder(order) {
+  if (!battle?.active) return;
+  const remaining = battle.cooldowns[order.id] ?? 0;
+  if (remaining > 0) return;
+  if (order.requirement && !order.requirement()) return;
+  if (state.resources[order.resource] < order.cost) return;
+
+  changeResource(order.resource, -order.cost);
+  order.deploy();
+  battle.cooldowns[order.id] = order.cooldown;
+  battle.message = `${order.title} savaş alanına girdi.`;
+  battle.messageTimer = 2.4;
+  updateResourceBoard();
+  renderBattleOrders();
+}
+
+function createUnit(team, type, x, y) {
+  const config = unitTypes[type];
+  return {
+    id: battle.nextUnitId++,
+    team,
+    type,
+    x,
+    y,
+    hp: config.hp,
+    maxHp: config.hp,
+    speed: config.speed,
+    range: config.range,
+    damage: config.damage,
+    attackDelay: config.attackDelay,
+    attackTimer: Math.random() * 0.4,
+    radius: config.radius,
+    ranged: Boolean(config.ranged),
+    cavalry: Boolean(config.cavalry),
+    ram: Boolean(config.ram),
+    ally: Boolean(config.ally),
+    dead: false,
+    attackFlash: 0,
+    facing: team === "friendly" ? 1 : -1,
+  };
+}
+
+function spawnGroup(team, type, count, originX, originY, spread = 42) {
+  if (!battle) return;
+  for (let index = 0; index < count; index += 1) {
+    const row = Math.floor(index / 3);
+    const column = index % 3;
+    const direction = team === "friendly" ? -1 : 1;
+    const x =
+      originX +
+      direction * row * 16 +
+      (Math.random() - 0.5) * spread * 0.45;
+    const y =
+      originY +
+      (column - 1) * 18 +
+      (Math.random() - 0.5) * spread * 0.55;
+    battle.units.push(
+      createUnit(team, type, clamp(x, 55, 950), clamp(y, 88, 500)),
+    );
+    if (team === "enemy") battle.totalEnemies += 1;
+  }
+}
+
+function spawnEnemyWave(waveNumber) {
+  if (!battle) return;
+  const laneA = 160 + Math.random() * 120;
+  const laneB = 345 + Math.random() * 100;
+
+  if (waveNumber === 1) {
+    spawnGroup("enemy", "enemyInfantry", 7, 920, laneA, 78);
+    spawnGroup("enemy", "enemyArcher", 2, 950, laneB, 54);
+  } else if (waveNumber === 2) {
+    spawnGroup("enemy", "enemyInfantry", 8, 935, laneB, 90);
+    spawnGroup("enemy", "enemyArcher", 3, 965, laneA, 70);
+  } else if (waveNumber === 3) {
+    spawnGroup("enemy", "ram", 1, 955, 280, 10);
+    spawnGroup("enemy", "enemyInfantry", 9, 930, laneA, 105);
+    spawnGroup("enemy", "enemyArcher", 3, 970, laneB, 70);
+  } else {
+    spawnGroup("enemy", "enemyInfantry", 10, 925, laneB, 115);
+    spawnGroup("enemy", "enemyArcher", 4, 970, laneA, 85);
+    spawnGroup("enemy", "ram", 1, 975, 330, 10);
+  }
+
+  battle.wave = waveNumber;
+  battle.message = `${waveNumber}. düşman dalgası savaş alanına girdi!`;
+  battle.messageTimer = 2.8;
+}
+
+function startBattle() {
+  if (battle?.active || state.battlePlayed) return;
+  stopBattle();
+
+  const context = elements.battleCanvas.getContext("2d");
+  battle = {
+    context,
+    active: false,
+    elapsed: 0,
+    duration: 45,
+    lastTimestamp: null,
+    frameId: null,
+    units: [],
+    projectiles: [],
+    particles: [],
+    nextUnitId: 1,
+    wave: 0,
+    totalEnemies: 0,
+    kills: 0,
+    fortressHp: clamp(88 + state.stats.savunma * 0.18, 88, 112),
+    rally: { x: 500, y: 285 },
+    cooldowns: Object.fromEntries(battleOrders.map((order) => [order.id, 0])),
+    orderRefreshTimer: 0,
+    message: "Düşman öncüleri geçide giriyor.",
+    messageTimer: 3,
+  };
+
+  elements.battleStage.hidden = false;
+  elements.battleCountdown.hidden = false;
+  elements.battleCountdownValue.textContent = "3";
+
+  spawnGroup("friendly", "infantry", 7, 165, 285, 100);
+  spawnGroup("friendly", "archer", 3, 115, 315, 75);
+
+  if (state.flags.has("commander-force")) {
+    spawnGroup("friendly", "cavalry", 2, 110, 210, 38);
+  }
+  if (state.flags.has("commander-mind")) {
+    spawnGroup("friendly", "archer", 2, 105, 380, 34);
+  }
+  if (
+    state.flags.has("commander-diplomat") &&
+    state.stats.ittifak >= 10
+  ) {
+    spawnGroup("friendly", "ally", 3, 130, 160, 48);
+  }
+
+  spawnEnemyWave(1);
+  drawBattle();
+  renderBattleOrders();
+
+  const currentBattle = battle;
+  [2, 1, 0].forEach((value, index) => {
+    window.setTimeout(
+      () => {
+        if (battle !== currentBattle) return;
+        if (value > 0) {
+          elements.battleCountdownValue.textContent = String(value);
+          return;
+        }
+        elements.battleCountdown.hidden = true;
+        battle.active = true;
+        battle.lastTimestamp = performance.now();
+        renderBattleOrders();
+        battle.frameId = requestAnimationFrame(battleLoop);
+      },
+      (index + 1) * 750,
+    );
+  });
+}
+
+function stopBattle() {
+  if (battle?.frameId) cancelAnimationFrame(battle.frameId);
+  if (battle) battle.active = false;
+  battle = null;
+  elements.battleStage.hidden = true;
+  elements.battleCountdown.hidden = true;
+  elements.choiceList.classList.remove("battle-orders");
+}
+
+function battleLoop(timestamp) {
+  if (!battle?.active) return;
+  const delta = Math.min(
+    0.034,
+    Math.max(0.001, (timestamp - battle.lastTimestamp) / 1000),
+  );
+  battle.lastTimestamp = timestamp;
+  battle.elapsed += delta;
+
+  const nextWaveTimes = [0, 10, 22, 34];
+  if (
+    battle.wave < 4 &&
+    battle.elapsed >= nextWaveTimes[battle.wave]
+  ) {
+    spawnEnemyWave(battle.wave + 1);
+  }
+
+  const aliveEnemies = battle.units.filter(
+    (unit) => !unit.dead && unit.team === "enemy",
+  ).length;
+  if (
+    aliveEnemies === 0 &&
+    battle.wave < 4 &&
+    battle.elapsed > 3
+  ) {
+    spawnEnemyWave(battle.wave + 1);
+  }
+
+  updateBattle(delta);
+  drawBattle();
+  updateBattleHud();
+
+  const remainingEnemies = battle.units.filter(
+    (unit) => !unit.dead && unit.team === "enemy",
+  ).length;
+  const allWavesDefeated = battle.wave === 4 && remainingEnemies === 0;
+  const timeExpired = battle.elapsed >= battle.duration;
+  const fortressFallen = battle.fortressHp <= 0;
+
+  if (allWavesDefeated || timeExpired || fortressFallen) {
+    finishBattle(!fortressFallen);
+    return;
+  }
+
+  battle.frameId = requestAnimationFrame(battleLoop);
+}
+
+function updateBattle(delta) {
+  battle.messageTimer -= delta;
+  Object.keys(battle.cooldowns).forEach((key) => {
+    battle.cooldowns[key] = Math.max(0, battle.cooldowns[key] - delta);
+  });
+
+  battle.units.forEach((unit) => {
+    if (!unit.dead) updateUnit(unit, delta);
+  });
+  applyUnitSeparation();
+  updateProjectiles(delta);
+  updateParticles(delta);
+
+  battle.units = battle.units.filter(
+    (unit) => !unit.dead || unit.deathTimer > 0,
+  );
+
+  battle.orderRefreshTimer -= delta;
+  if (battle.orderRefreshTimer <= 0) {
+    battle.orderRefreshTimer = 0.5;
+    renderBattleOrders();
+  }
+}
+
+function updateUnit(unit, delta) {
+  unit.attackTimer -= delta;
+  unit.attackFlash = Math.max(0, unit.attackFlash - delta);
+
+  if (unit.ram) {
+    moveEnemyTowardFortress(unit, delta);
+    return;
+  }
+
+  const opponents = battle.units.filter(
+    (candidate) => !candidate.dead && candidate.team !== unit.team,
+  );
+  const acquisition = unit.ranged ? 270 : unit.cavalry ? 250 : 205;
+  const target = nearestUnit(unit, opponents, acquisition);
+
+  if (target) {
+    const dx = target.x - unit.x;
+    const dy = target.y - unit.y;
+    const distance = Math.hypot(dx, dy) || 1;
+    unit.facing = Math.sign(dx) || unit.facing;
+
+    if (distance > unit.range + target.radius) {
+      moveUnit(unit, dx / distance, dy / distance, delta);
+    } else if (unit.attackTimer <= 0) {
+      attackUnit(unit, target);
+    }
+    return;
+  }
+
+  if (unit.team === "friendly") {
+    const dx = battle.rally.x - unit.x;
+    const dy = battle.rally.y - unit.y;
+    const distance = Math.hypot(dx, dy);
+    if (distance > 32) {
+      moveUnit(unit, dx / distance, dy / distance, delta, 0.72);
+    }
+  } else {
+    moveEnemyTowardFortress(unit, delta);
+  }
+}
+
+function moveEnemyTowardFortress(unit, delta) {
+  const gate = { x: 104, y: clamp(unit.y, 190, 370) };
+  const dx = gate.x - unit.x;
+  const dy = gate.y - unit.y;
+  const distance = Math.hypot(dx, dy) || 1;
+  unit.facing = -1;
+
+  if (distance > unit.range + 20) {
+    moveUnit(unit, dx / distance, dy / distance, delta);
+    return;
+  }
+
+  if (unit.attackTimer <= 0) {
+    unit.attackTimer = unit.attackDelay;
+    unit.attackFlash = 0.16;
+    battle.fortressHp = Math.max(0, battle.fortressHp - unit.damage);
+    createImpact(110, unit.y, "enemy", unit.ram ? 14 : 8);
+    elements.battleStage.classList.add("castle-hit");
+    window.setTimeout(
+      () => elements.battleStage.classList.remove("castle-hit"),
+      220,
+    );
+  }
+}
+
+function moveUnit(unit, directionX, directionY, delta, factor = 1) {
+  unit.x = clamp(
+    unit.x + directionX * unit.speed * factor * delta,
+    45,
+    965,
+  );
+  unit.y = clamp(
+    unit.y + directionY * unit.speed * factor * delta,
+    78,
+    510,
+  );
+}
+
+function nearestUnit(origin, candidates, maxDistance) {
+  let nearest = null;
+  let nearestDistance = maxDistance;
+  candidates.forEach((candidate) => {
+    const distance = Math.hypot(
+      candidate.x - origin.x,
+      candidate.y - origin.y,
+    );
+    if (distance < nearestDistance) {
+      nearest = candidate;
+      nearestDistance = distance;
+    }
+  });
+  return nearest;
+}
+
+function attackUnit(attacker, target) {
+  attacker.attackTimer = attacker.attackDelay;
+  attacker.attackFlash = 0.14;
+
+  if (attacker.ranged) {
+    const distance = Math.hypot(target.x - attacker.x, target.y - attacker.y);
+    battle.projectiles.push({
+      x: attacker.x,
+      y: attacker.y - 8,
+      target,
+      team: attacker.team,
+      damage: attacker.damage,
+      speed: 340,
+      ttl: Math.max(0.25, distance / 300 + 0.15),
+    });
+    return;
+  }
+
+  damageUnit(target, attacker.damage, attacker.team);
+  createImpact(target.x, target.y, attacker.team, attacker.cavalry ? 10 : 6);
+}
+
+function damageUnit(target, amount, sourceTeam) {
+  if (target.dead) return;
+  target.hp -= amount;
+  if (target.hp > 0) return;
+
+  target.dead = true;
+  target.deathTimer = 0.45;
+  if (target.team === "enemy" && sourceTeam === "friendly") {
+    battle.kills += 1;
+  }
+  createImpact(target.x, target.y, sourceTeam, 14);
+}
+
+function updateProjectiles(delta) {
+  battle.projectiles.forEach((projectile) => {
+    if (projectile.target.dead) {
+      projectile.ttl = 0;
+      return;
+    }
+    const dx = projectile.target.x - projectile.x;
+    const dy = projectile.target.y - projectile.y;
+    const distance = Math.hypot(dx, dy) || 1;
+    const travel = projectile.speed * delta;
+    if (distance <= travel + projectile.target.radius) {
+      damageUnit(projectile.target, projectile.damage, projectile.team);
+      createImpact(
+        projectile.target.x,
+        projectile.target.y,
+        projectile.team,
+        5,
+      );
+      projectile.ttl = 0;
+      return;
+    }
+    projectile.x += (dx / distance) * travel;
+    projectile.y += (dy / distance) * travel;
+    projectile.ttl -= delta;
+  });
+  battle.projectiles = battle.projectiles.filter(
+    (projectile) => projectile.ttl > 0,
+  );
+}
+
+function applyUnitSeparation() {
+  const aliveUnits = battle.units.filter((unit) => !unit.dead);
+  for (let leftIndex = 0; leftIndex < aliveUnits.length; leftIndex += 1) {
+    for (
+      let rightIndex = leftIndex + 1;
+      rightIndex < aliveUnits.length;
+      rightIndex += 1
+    ) {
+      const left = aliveUnits[leftIndex];
+      const right = aliveUnits[rightIndex];
+      const dx = right.x - left.x;
+      const dy = right.y - left.y;
+      const distance = Math.hypot(dx, dy) || 0.1;
+      const minimum = (left.radius + right.radius) * 0.75;
+      if (distance >= minimum) continue;
+      const push = (minimum - distance) * 0.16;
+      const nx = dx / distance;
+      const ny = dy / distance;
+      left.x -= nx * push;
+      left.y -= ny * push;
+      right.x += nx * push;
+      right.y += ny * push;
+    }
+  }
+}
+
+function createImpact(x, y, team, amount) {
+  for (let index = 0; index < amount; index += 1) {
+    battle.particles.push({
+      x,
+      y,
+      vx: (Math.random() - 0.5) * 80,
+      vy: (Math.random() - 0.5) * 80 - 15,
+      life: 0.25 + Math.random() * 0.35,
+      maxLife: 0.6,
+      team,
+    });
+  }
+}
+
+function updateParticles(delta) {
+  battle.particles.forEach((particle) => {
+    particle.x += particle.vx * delta;
+    particle.y += particle.vy * delta;
+    particle.vy += 60 * delta;
+    particle.life -= delta;
+  });
+  battle.particles = battle.particles.filter(
+    (particle) => particle.life > 0,
+  );
+  battle.units.forEach((unit) => {
+    if (unit.dead) unit.deathTimer -= delta;
+  });
+}
+
+function drawBattle() {
+  if (!battle?.context) return;
+  const context = battle.context;
+  const width = elements.battleCanvas.width;
+  const height = elements.battleCanvas.height;
+  context.clearRect(0, 0, width, height);
+
+  drawBattleGround(context, width, height);
+  battle.units
+    .filter((unit) => !unit.dead)
+    .sort((left, right) => left.y - right.y)
+    .forEach((unit) => drawUnit(context, unit));
+  battle.projectiles.forEach((projectile) =>
+    drawProjectile(context, projectile),
+  );
+  battle.particles.forEach((particle) => drawParticle(context, particle));
+}
+
+function drawBattleGround(context, width, height) {
+  context.save();
+  context.fillStyle = "rgba(3, 6, 8, 0.13)";
+  context.fillRect(0, 0, width, height);
+
+  context.strokeStyle = "rgba(216, 173, 84, 0.11)";
+  context.lineWidth = 1;
+  [170, 280, 390].forEach((y) => {
+    context.beginPath();
+    context.moveTo(115, y);
+    context.bezierCurveTo(380, y - 35, 670, y + 35, 970, y);
+    context.stroke();
+  });
+
+  context.fillStyle = "rgba(8, 19, 20, 0.82)";
+  context.fillRect(42, 124, 74, 318);
+  context.fillStyle = "rgba(101, 196, 179, 0.22)";
+  for (let y = 132; y < 430; y += 34) {
+    context.fillRect(36, y, 88, 7);
+  }
+  context.fillStyle = "rgba(242, 217, 149, 0.75)";
+  context.fillRect(104, 248, 8, 76);
+
+  const pulse = 16 + Math.sin(battle.elapsed * 4) * 4;
+  context.strokeStyle = "rgba(242, 217, 149, 0.82)";
+  context.lineWidth = 2;
+  context.beginPath();
+  context.arc(battle.rally.x, battle.rally.y, pulse, 0, Math.PI * 2);
+  context.stroke();
+  context.beginPath();
+  context.moveTo(battle.rally.x - 23, battle.rally.y);
+  context.lineTo(battle.rally.x + 23, battle.rally.y);
+  context.moveTo(battle.rally.x, battle.rally.y - 23);
+  context.lineTo(battle.rally.x, battle.rally.y + 23);
+  context.stroke();
+  context.restore();
+}
+
+function drawUnit(context, unit) {
+  context.save();
+  context.translate(unit.x, unit.y);
+  if (unit.dead) {
+    context.globalAlpha = clamp(unit.deathTimer / 0.45, 0, 1);
+  }
+  context.scale(unit.facing, 1);
+
+  const friendly = unit.team === "friendly";
+  const bodyColor = unit.ally
+    ? "#c5dbea"
+    : friendly
+      ? "#65c4b3"
+      : "#d25d4d";
+  const metalColor = friendly ? "#f2d995" : "#e2b0a8";
+
+  context.fillStyle = "rgba(0, 0, 0, 0.35)";
+  context.beginPath();
+  context.ellipse(0, 7, unit.radius * 1.35, 4.2, 0, 0, Math.PI * 2);
+  context.fill();
+
+  if (unit.ram) {
+    context.fillStyle = "#6d4a2f";
+    context.fillRect(-18, -8, 36, 16);
+    context.fillStyle = "#a78356";
+    context.fillRect(-21, -4, 42, 5);
+    context.fillStyle = "#2d241d";
+    [-13, 13].forEach((x) => {
+      context.beginPath();
+      context.arc(x, 10, 5, 0, Math.PI * 2);
+      context.fill();
+    });
+  } else if (unit.cavalry) {
+    context.fillStyle = "#594432";
+    context.beginPath();
+    context.ellipse(0, 1, 14, 7, 0, 0, Math.PI * 2);
+    context.fill();
+    context.fillStyle = bodyColor;
+    context.fillRect(-2, -12, 5, 12);
+    context.beginPath();
+    context.arc(0, -15, 4, 0, Math.PI * 2);
+    context.fill();
+    context.strokeStyle = metalColor;
+    context.lineWidth = 2;
+    context.beginPath();
+    context.moveTo(4, -9);
+    context.lineTo(18, -16 - unit.attackFlash * 22);
+    context.stroke();
+  } else {
+    context.strokeStyle = bodyColor;
+    context.fillStyle = bodyColor;
+    context.lineWidth = 3.2;
+    context.beginPath();
+    context.moveTo(0, -7);
+    context.lineTo(0, 6);
+    context.moveTo(0, 4);
+    context.lineTo(-5, 12);
+    context.moveTo(0, 4);
+    context.lineTo(5, 12);
+    context.stroke();
+    context.beginPath();
+    context.arc(0, -11, 4.5, 0, Math.PI * 2);
+    context.fill();
+
+    context.strokeStyle = metalColor;
+    context.lineWidth = 2;
+    if (unit.ranged) {
+      context.beginPath();
+      context.arc(5, -2, 7, -1.2, 1.2);
+      context.stroke();
+      context.beginPath();
+      context.moveTo(2, -8);
+      context.lineTo(9, 5);
+      context.stroke();
+    } else {
+      context.beginPath();
+      context.moveTo(1, -2);
+      context.lineTo(11 + unit.attackFlash * 24, -8);
+      context.stroke();
+    }
+  }
+
+  if (unit.hp < unit.maxHp) {
+    context.scale(unit.facing, 1);
+    context.fillStyle = "rgba(0,0,0,0.65)";
+    context.fillRect(-12, -23, 24, 3);
+    context.fillStyle = friendly ? "#65c4b3" : "#d25d4d";
+    context.fillRect(
+      -12,
+      -23,
+      24 * clampFloat(unit.hp / unit.maxHp),
+      3,
+    );
+  }
+  context.restore();
+}
+
+function drawProjectile(context, projectile) {
+  context.save();
+  const angle = Math.atan2(
+    projectile.target.y - projectile.y,
+    projectile.target.x - projectile.x,
+  );
+  context.translate(projectile.x, projectile.y);
+  context.rotate(angle);
+  context.strokeStyle =
+    projectile.team === "friendly" ? "#f2d995" : "#f0b5aa";
+  context.lineWidth = 1.5;
+  context.beginPath();
+  context.moveTo(-8, 0);
+  context.lineTo(7, 0);
+  context.stroke();
+  context.restore();
+}
+
+function drawParticle(context, particle) {
+  context.save();
+  context.globalAlpha = clampFloat(particle.life / particle.maxLife);
+  context.fillStyle =
+    particle.team === "friendly" ? "#f2d995" : "#d25d4d";
+  context.fillRect(particle.x, particle.y, 2.4, 2.4);
+  context.restore();
+}
+
+function updateBattleHud() {
+  const aliveEnemies = battle.units.filter(
+    (unit) => !unit.dead && unit.team === "enemy",
+  ).length;
+  const remaining = Math.max(0, battle.duration - battle.elapsed);
+  const minutes = Math.floor(remaining / 60);
+  const seconds = Math.ceil(remaining % 60);
+
+  elements.battleFortressValue.textContent = Math.round(battle.fortressHp);
+  elements.battleFortressMeter.style.width = `${clamp(battle.fortressHp)}%`;
+  elements.battleEnemyValue.textContent = aliveEnemies;
+  elements.battleEnemyMeter.style.width = `${clamp(
+    (aliveEnemies / 15) * 100,
+  )}%`;
+  elements.battleTimer.textContent = `${String(minutes).padStart(2, "0")}:${String(
+    seconds,
+  ).padStart(2, "0")}`;
+  elements.battleMessage.textContent =
+    battle.messageTimer > 0
+      ? battle.message
+      : "Haritaya dokunarak hücum hattını değiştir.";
+}
+
+function finishBattle(survived) {
+  if (!battle) return;
+  battle.active = false;
+  if (battle.frameId) cancelAnimationFrame(battle.frameId);
+
+  const fortressHp = Math.round(battle.fortressHp);
+  const kills = battle.kills;
+  const totalEnemies = Math.max(1, battle.totalEnemies);
+  const killRatio = kills / totalEnemies;
+  const result =
+    survived && fortressHp >= 68 && killRatio >= 0.72
+      ? "decisive"
+      : survived && fortressHp > 22
+        ? "held"
+        : "costly";
+
+  state.battlePlayed = true;
+  state.battleResult = result;
+  state.battlePower = Math.round(
+    94 + fortressHp * 0.62 + killRatio * 72 + state.stats.ittifak * 0.2,
+  );
+  changeStat("dusmanHasari", Math.round(killRatio * 72));
+  changeStat(
+    "savunma",
+    Math.round((fortressHp - 65) * 0.18),
+  );
+  changeResource("moral", result === "decisive" ? 12 : result === "held" ? 5 : -8);
+
+  const copy = {
+    decisive: `Dört düşman dalgası dağıldı. ${kills} asker etkisiz hâle getirildi; kale neredeyse yara almadan ayakta.`,
+    held: `Kale şafağa ulaştı. ${kills} düşman askeri durduruldu; duvarlar ${fortressHp} dayanıklılıkla ayakta.`,
+    costly: `İç kale son anda tutuldu. ${kills} düşman askeri durduruldu, fakat savunmanın bedeli ağır oldu.`,
+  }[result];
+
+  state.history.push({ time: "Şafak Öncesi", copy });
+  elements.lastResultText.textContent = copy;
+  elements.lastResult.hidden = false;
+  elements.battleMessage.textContent =
+    result === "decisive"
+      ? "KESİN ZAFER · Düşman hatları çözüldü."
+      : result === "held"
+        ? "KALE TUTULDU · Şafak boruları çalıyor."
+        : "AĞIR BEDEL · İç kale hâlâ ayakta.";
+  updateResourceBoard();
+  updateMap();
+  updateChronicle();
+
+  const completedBattle = battle;
+  window.setTimeout(() => {
+    if (battle !== completedBattle) return;
+    stopBattle();
+    state.turn = 4;
+    renderScene();
+  }, 1800);
+}
+
+function resolveBattleForTest(result = "held") {
+  if (!globalThis.__CIHAN_TEST__) return;
+  state.battlePlayed = true;
+  state.battleResult = result;
+  state.battlePower = result === "decisive" ? 166 : result === "held" ? 132 : 98;
+  changeStat("dusmanHasari", result === "decisive" ? 70 : 46);
+  changeResource("moral", result === "costly" ? -8 : 8);
+  state.history.push({
+    time: "Şafak Öncesi",
+    copy: "Otomatik savaş testi tamamlandı.",
+  });
+  state.turn = 4;
+  renderScene();
+}
+
+function setBattleRally(event) {
+  if (!battle?.active) return;
+  const bounds = elements.battleCanvas.getBoundingClientRect();
+  const x =
+    ((event.clientX - bounds.left) / bounds.width) *
+    elements.battleCanvas.width;
+  const y =
+    ((event.clientY - bounds.top) / bounds.height) *
+    elements.battleCanvas.height;
+  battle.rally.x = clamp(x, 220, 760);
+  battle.rally.y = clamp(y, 105, 480);
+  battle.message = "Yeni hücum hattı belirlendi.";
+  battle.messageTimer = 1.6;
+}
 
 function calculateBattle() {
   if (state.battlePower !== null) return;
@@ -522,20 +1454,32 @@ function renderScene() {
     pip.classList.toggle("complete", index < state.turn);
   });
 
-  renderChoices(scene.choices);
+  if (state.turn === 3 && !state.battlePlayed) {
+    renderBattleOrders();
+    if (!globalThis.__CIHAN_TEST__) {
+      window.setTimeout(() => {
+        if (state.turn === 3 && !state.battlePlayed) startBattle();
+      }, 450);
+    }
+  } else {
+    renderChoices(scene.choices);
+  }
   updateResourceBoard();
   updateMap();
   updateChronicle();
 
   requestAnimationFrame(() => {
-    elements.choiceList.querySelector("button:not(:disabled)")?.focus({
-      preventScroll: true,
-    });
+    if (state.turn !== 3 || state.battlePlayed) {
+      elements.choiceList.querySelector("button:not(:disabled)")?.focus({
+        preventScroll: true,
+      });
+    }
   });
 }
 
 function renderChoices(choices) {
   elements.choiceList.replaceChildren();
+  elements.choiceList.classList.remove("battle-orders");
 
   choices.forEach((choice, index) => {
     const available = choice.available ? choice.available() : true;
@@ -735,6 +1679,7 @@ function completeGame() {
 }
 
 function startGame() {
+  stopBattle();
   state = initialState();
   transitionLocked = false;
   elements.openingScreen.hidden = true;
@@ -743,6 +1688,7 @@ function startGame() {
 }
 
 function showOpening() {
+  stopBattle();
   state = initialState();
   transitionLocked = false;
   elements.outcomeScreen.hidden = true;
@@ -756,6 +1702,7 @@ function showOpening() {
 elements.startButton.addEventListener("click", startGame);
 elements.playAgainButton.addEventListener("click", startGame);
 elements.restartButton.addEventListener("click", showOpening);
+elements.battleCanvas.addEventListener("pointerdown", setBattleRally);
 
 document.addEventListener("keydown", (event) => {
   if (

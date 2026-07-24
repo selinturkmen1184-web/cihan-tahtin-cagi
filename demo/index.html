@@ -56,6 +56,42 @@
         <div class="world-panel">
           <div class="world-image" id="worldImage">
             <div class="world-vignette" aria-hidden="true"></div>
+            <div class="battle-stage" id="battleStage" hidden>
+              <canvas
+                id="battleCanvas"
+                width="1000"
+                height="560"
+                aria-label="Gerçek zamanlı kuşatma savaş alanı"
+              ></canvas>
+              <div class="battle-topbar">
+                <div>
+                  <span>KALE DAYANIKLILIĞI</span>
+                  <strong id="battleFortressValue">100</strong>
+                  <div class="battle-meter friendly">
+                    <i id="battleFortressMeter"></i>
+                  </div>
+                </div>
+                <div class="battle-timer">
+                  <span>ŞAFAĞA KALAN</span>
+                  <strong id="battleTimer">00:45</strong>
+                </div>
+                <div>
+                  <span>DÜŞMAN KUVVETİ</span>
+                  <strong id="battleEnemyValue">0</strong>
+                  <div class="battle-meter enemy">
+                    <i id="battleEnemyMeter"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="battle-message" id="battleMessage">
+                <span>HÜCUM NOKTASI</span>
+                Haritada istediğin yere dokun; birliklerin o hatta ilerlesin.
+              </div>
+              <div class="battle-countdown" id="battleCountdown" hidden>
+                <span id="battleCountdownValue">3</span>
+                <small>SURLARI SAVUN</small>
+              </div>
+            </div>
             <div class="weather weather-one" aria-hidden="true"></div>
             <div class="weather weather-two" aria-hidden="true"></div>
 
