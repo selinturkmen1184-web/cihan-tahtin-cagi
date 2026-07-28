@@ -11,3 +11,8 @@ birleştirir. İlerleme tarayıcıda yerel olarak saklanır.
 Canlı site: https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/
 
 Oynanabilir demo: https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/demo/
+
+Android test APK:
+https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v4.apk
+
+APK sürümü `0.4.1` olup Android 8.0 ve üzeri test cihazları içindir.
