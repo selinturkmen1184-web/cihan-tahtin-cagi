@@ -13,9 +13,9 @@ Canlı site: https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/
 Oynanabilir demo: https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/demo/
 
 Android test APK:
-https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v7.apk
+https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v8.apk
 
-APK sürümü `0.7.0` olup Android 8.0 ve üzeri test cihazları içindir.
+APK sürümü `0.8.0` olup Android 8.0 ve üzeri test cihazları içindir.
 
 Unity v7 kaynak paketi:
 https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/raw/main/cihan-mobile-3d-strategy-unity-v7.zip
