@@ -13,12 +13,14 @@ Canlı site: https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/
 Oynanabilir demo: https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/demo/
 
 Android test APK:
-https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v8.apk
+https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v9.apk
 
-APK sürümü `0.8.0` olup Android 8.0 ve üzeri test cihazları içindir.
+APK sürümü `0.9.0` olup Android 8.0 ve üzeri test cihazları içindir. Bu
+sürümde yeni sinematik savaş alanı, hareketli sancaklar, duman ve ateş
+atmosferi, birlik gölgeleri ve güçlendirilmiş kuşatma efektleri bulunur.
 
 iPhone/iPad için Unity 6000.0.0f1 iOS kaynak paketi:
-https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/raw/main/cihan-mobile-ios-unity-v8-source.zip
+https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/raw/main/cihan-mobile-ios-unity-v9-source.zip
 
 Paket; iOS Build Support yapılandırması, Xcode proje üreticisi, otomatik
 imzalama ayarları ve IPA üretim betiğini içerir. TestFlight/App Store çıktısı
