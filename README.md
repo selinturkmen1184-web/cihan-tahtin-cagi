@@ -14,7 +14,7 @@ grand-strategy prototipi.
 
 ## İndir
 
-- [Android V12 APK](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12/Cihan-Tahtin-Cagi-v12.apk)
+- [Android V12.1 APK — açılış uyumluluk düzeltmesi](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12.1/Cihan-Tahtin-Cagi-v12.1.apk)
 - [Unity V12 kaynak paketi](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12/Cihan-Tahtin-Cagi-Unity-V12-Kaynak.zip)
 - [V12 krallık sunucusu](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12/Cihan-Krallik-Sunucusu-V12.zip)
 - [Tanıtım ve indirme sayfası](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/)
