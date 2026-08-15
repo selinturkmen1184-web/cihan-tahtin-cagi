@@ -1,10 +1,14 @@
-# CİHAN: Tahtın Çağı — V12
+# CİHAN: Tahtın Çağı — V13
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
 
-## V12
+## V13
 
+- Dikey sefer haritasında hedef kale seçimi ve animasyonlu ordu yürüyüşü
+- Savaş parametrelerine bağlanan casusluk, sabotaj ve rüşvet kararları
+- Formasyon seçimi, komutan yetenekleri ve sonuçlanan canlı 3B kuşatma
+- Zaferden sonra haritada kalıcı toprak fethi ve açılan yeni bölgeler
 - Yaşayan 3B payitaht, nüfus, refah ve araştırma ağacı
 - Aybars, Nizam ve Leyla için seviye, yıldız ve ekipman ilerlemesi
 - Üç birlik/komutan yuvalı formasyon ve savaş doktrinleri
@@ -14,8 +18,8 @@ grand-strategy prototipi.
 
 ## İndir
 
-- [Android V12.1 APK — açılış uyumluluk düzeltmesi](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12.1/Cihan-Tahtin-Cagi-v12.1.apk)
-- [Unity V12 kaynak paketi](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12/Cihan-Tahtin-Cagi-Unity-V12-Kaynak.zip)
+- [Android V13 APK](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v13/Cihan-Tahtin-Cagi-v13.apk)
+- [Unity V13 kaynak paketi](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v13/Cihan-Tahtin-Cagi-Unity-V13-Kaynak.zip)
 - [V12 krallık sunucusu](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12/Cihan-Krallik-Sunucusu-V12.zip)
 - [Tanıtım ve indirme sayfası](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/)
 

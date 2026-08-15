@@ -270,6 +270,89 @@ a {
   padding: clamp(5.5rem, 10vw, 9rem) clamp(1.5rem, 7vw, 7rem);
 }
 
+.playable-section {
+  background:
+    radial-gradient(circle at 18% 20%, rgba(214, 177, 95, 0.12), transparent 32%),
+    var(--ink);
+}
+
+.playable-grid {
+  display: grid;
+  gap: clamp(1.4rem, 3vw, 3rem);
+  margin-top: 4rem;
+}
+
+.playable-card {
+  align-items: stretch;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr);
+  min-height: 650px;
+  overflow: hidden;
+}
+
+.playable-card.reverse {
+  grid-template-columns: minmax(0, 1.28fr) minmax(280px, 0.72fr);
+}
+
+.playable-card.reverse img {
+  grid-column: 2;
+}
+
+.playable-card.reverse div {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.playable-card img {
+  height: 650px;
+  object-fit: cover;
+  width: 100%;
+}
+
+.playable-card div {
+  align-self: center;
+  padding: clamp(2rem, 6vw, 6rem);
+}
+
+.playable-card span {
+  color: var(--gold);
+  font-size: 0.75rem;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.playable-card h3 {
+  font-size: clamp(2.4rem, 5vw, 5rem);
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+  margin: 1.6rem 0;
+}
+
+.playable-card p {
+  color: var(--muted);
+  font-size: clamp(1rem, 1.6vw, 1.35rem);
+  line-height: 1.6;
+  max-width: 680px;
+}
+
+.combat-proof {
+  background: var(--gold);
+  color: var(--ink);
+  display: grid;
+  font-size: 0.84rem;
+  gap: 0.75rem;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 1.4rem;
+  padding: 1.4rem;
+  text-align: center;
+}
+
+.combat-proof strong {
+  letter-spacing: 0.12em;
+}
+
 .section-kicker {
   align-items: center;
   display: flex;
@@ -929,6 +1012,15 @@ footer > a {
     grid-template-columns: 1fr;
   }
 
+  .playable-card,
+  .playable-card.reverse {
+    grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.2fr);
+  }
+
+  .combat-proof {
+    grid-template-columns: 1fr 1fr;
+  }
+
   .vision-grid {
     gap: 4rem;
   }
@@ -996,6 +1088,32 @@ footer > a {
   .phase-grid,
   footer {
     grid-template-columns: 1fr;
+  }
+
+  .playable-card,
+  .playable-card.reverse {
+    display: block;
+    min-height: 0;
+  }
+
+  .playable-card.reverse img,
+  .playable-card.reverse div {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .playable-card img {
+    height: 76svh;
+    min-height: 520px;
+  }
+
+  .playable-card div {
+    padding: 2.2rem 1.5rem 2.8rem;
+  }
+
+  .combat-proof {
+    grid-template-columns: 1fr;
+    text-align: left;
   }
 
   .comparison > div {
