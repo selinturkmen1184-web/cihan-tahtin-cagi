@@ -1,9 +1,17 @@
-# CİHAN: Tahtın Çağı — V17
+# CİHAN: Tahtın Çağı — V18
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
 
-## V17
+## V18
+
+- Özgün, yüksek çözünürlüklü sinematik payitaht ana ekranı
+- Hükümdar seviyesi, VIP, devlet gücü ve dört kaynak içeren yoğun mobil HUD
+- Dokunulabilir saray, Enderun, elçilik, şifahane, kışla ve üretim yapıları
+- Görev/olay bildirimleri ve Ordu–Sefer–Divan kısayolları
+- Düğümlü, yıldızlı parşömen fetih rotası ve savaşa geçiş
+
+## V17 savaş omurgası
 
 - Düşük poligonlu askerlerin yerine özgün gerçekçi piyade, okçu, süvari ve topçu mangaları
 - Hedeflenen dikey mobil strateji dili için daha dik tepeden savaş kamerası
@@ -33,8 +41,8 @@ grand-strategy prototipi.
 
 ## İndir
 
-- [Android V17 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v17.apk)
-- [Unity V17 kaynak paketi](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/Cihan-Tahtin-Cagi-Unity-V17-Kaynak.zip)
+- [Android V18 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v18.apk)
+- [Unity V18 kaynak paketi](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/Cihan-Tahtin-Cagi-Unity-V18-Kaynak.zip)
 - [V12 krallık sunucusu](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12/Cihan-Krallik-Sunucusu-V12.zip)
 - [Tanıtım ve indirme sayfası](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/)
 
