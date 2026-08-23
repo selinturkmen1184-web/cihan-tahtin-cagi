@@ -1,7 +1,16 @@
-# CİHAN: Tahtın Çağı — V21
+# CİHAN: Tahtın Çağı — V22
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V22 tam ekran fetih düzeni
+
+- Şehir kartlarını çökerten yerleşim hatasının giderildiği, yazıları üst üste bindirmeyen yeni arayüz
+- Yalnızca dokunulabilir yapılar ve sefer komutu taşıyan tam ekran payitaht
+- On iki hedefin aynı ekranda seçilebildiği geniş sefer haritası ve kompakt hedef paneli
+- Formasyon ekranından gerçek zamanlı kuşatmaya uzanan kesintisiz sefer akışı
+- Daha geniş savaş meydanı, görünür mangalar ve altta erişilebilir savaş emirleri
+- Android 0.22.0 / build 220; ARMv7 ve ARM64 desteği
 
 ## V21 fetih seferi
 
@@ -67,8 +76,8 @@ grand-strategy prototipi.
 
 ## İndir
 
-- [Android V21 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v21.apk)
-- [Unity V21 kaynak paketi](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/Cihan-Tahtin-Cagi-Unity-V21-Kaynak.zip)
+- [Android V22 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v22.apk)
+- [Unity V22 kaynak paketi](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/Cihan-Tahtin-Cagi-Unity-V22-Kaynak.zip)
 - [V12 krallık sunucusu](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12/Cihan-Krallik-Sunucusu-V12.zip)
 - [Tanıtım ve indirme sayfası](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/)
 
