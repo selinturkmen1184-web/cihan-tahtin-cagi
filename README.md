@@ -1,15 +1,24 @@
-# CİHAN: Tahtın Çağı — V20
+# CİHAN: Tahtın Çağı — V21
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
 
-## V20
+## V21 fetih seferi
+
+- Başkent, dünya haritası, formasyon hazırlığı, ordu yürüyüşü, gerçek zamanlı kuşatma ve fetih sonucunu birleştiren uçtan uca sefer akışı
+- Dikey ekranda tamamı görülen tek parça, özgün 12 şehirli cihan haritası
+- Bütün simülasyon mangalarını savaş alanında görünür kılan yeni piyade, okçu, süvari, topçu ve kumandan çizimi
+- Birliklerin mesafeyi kapattığı, hedef bulduğu, saldırdığı, hasar aldığı ve sur hattını yıktığı çalışan kuşatma simülasyonu
+- Özgün yüksek çözünürlüklü payitaht, dünya haritası ve kuşatma görsel seti
+- Android 0.21.0 / build 210; ARMv7 ve ARM64 desteği
+
+## V20 yönetim omurgası
 
 - Uzun menü akışı yerine görev, ödül, günlük emir, araştırma ve bina geliştirmeyi birleştiren yaşayan payitaht ana ekranı
 - Sıradaki hedefi gösteren Lale Hatun görev rehberi ve tek dokunuşla ilgili oyun bölümüne geçiş
 - Aybars, Nizam ve Leyla için büyük portreli seçilebilir komutan koleksiyonu
 - Seçilen komutanda seviye, yıldız, nişan, silah, zırh, yetenek ve ordu ataması yönetimi
-- Android 0.20.0 / build 200; mevcut V19 kaydının üzerine kurulabilir
+- Mevcut V19 kaydının üzerine kurulabilen birleşik kayıt ve ekonomi
 
 ## V19 taktik savaş omurgası
 
@@ -58,8 +67,8 @@ grand-strategy prototipi.
 
 ## İndir
 
-- [Android V20 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v20.apk)
-- [Unity V20 kaynak paketi](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/Cihan-Tahtin-Cagi-Unity-V20-Kaynak.zip)
+- [Android V21 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v21.apk)
+- [Unity V21 kaynak paketi](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/Cihan-Tahtin-Cagi-Unity-V21-Kaynak.zip)
 - [V12 krallık sunucusu](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12/Cihan-Krallik-Sunucusu-V12.zip)
 - [Tanıtım ve indirme sayfası](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/)
 

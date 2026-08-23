@@ -133,7 +133,7 @@ a {
       rgba(7, 16, 24, 0.08) 100%
     ),
     linear-gradient(0deg, rgba(7, 16, 24, 0.9) 0%, rgba(7, 16, 24, 0) 45%),
-    url("./cover-key-art.png") center / cover no-repeat;
+    url("./capital-preview-v21.png") center 58% / cover no-repeat;
   display: grid;
   min-height: 100svh;
   overflow: hidden;
@@ -661,7 +661,7 @@ blockquote {
 }
 
 .capital-section {
-  background-image: url("./living-capital.png");
+  background-image: url("./capital-preview-v21.png");
   display: flex;
   min-height: 900px;
 }
@@ -710,7 +710,7 @@ blockquote {
 }
 
 .war-section {
-  background-image: url("./alliance-war-map.png");
+  background-image: url("./siege-preview-v21.png");
   display: flex;
   min-height: 900px;
 }
@@ -904,7 +904,7 @@ blockquote {
   align-items: center;
   background:
     linear-gradient(90deg, rgba(7, 16, 24, 0.98), rgba(7, 16, 24, 0.7)),
-    url("./cover-key-art.png") center 55% / cover no-repeat;
+    url("./world-preview-v21.png") center 58% / cover no-repeat;
   display: grid;
   gap: clamp(3rem, 8vw, 8rem);
   grid-template-columns: minmax(0, 1fr) minmax(330px, 0.72fr);
