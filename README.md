@@ -1,7 +1,15 @@
-# CİHAN: Tahtın Çağı — V23
+# CİHAN: Tahtın Çağı — V24
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V24 sinematik görsel dünya
+
+- Saray, kışla, akademi ve üretim bölgeleriyle baştan tasarlanan yüksek ayrıntılı payitaht
+- Kaleye kadar uzanan S biçimli yol ve on iki dokunulabilir hedef taşıyan sinematik fetih haritası
+- Şehir yollarında devriye gezen özgün muhafızlar ve sefer rotasında yürüyen ordu
+- Seçim halkaları, üretim göstergeleri ve hedef seçimine bağlı çalışan komuta panelleri
+- Android 0.24.0 / build 240; ARMv7 ve ARM64 desteği
 
 ## V23 canlı 3B fetih düzeni
 
@@ -85,6 +93,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V24 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v24.apk)
+- [Unity V24 kaynak paketi](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/Cihan-Tahtin-Cagi-Unity-V24-Kaynak.zip)
 - [Android V23 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v23.apk)
 - [Unity V23 kaynak paketi](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/Cihan-Tahtin-Cagi-Unity-V23-Kaynak.zip)
 - [V12 krallık sunucusu](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12/Cihan-Krallik-Sunucusu-V12.zip)
