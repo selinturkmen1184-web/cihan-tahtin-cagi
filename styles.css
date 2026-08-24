@@ -1,14 +1,14 @@
 :root {
-  --ink: #071018;
-  --ink-2: #0d1922;
-  --ink-3: #142630;
-  --ivory: #f6f0e4;
-  --muted: #cfc6b5;
-  --gold: #d6b15f;
-  --gold-light: #f1d89c;
-  --crimson: #c8656f;
-  --teal: #6aa7a1;
-  --line: rgba(214, 177, 95, 0.28);
+  --ink: #040811;
+  --ink-2: #08121d;
+  --ink-3: #0e2732;
+  --ivory: #faf3de;
+  --muted: #95babe;
+  --gold: #f0b443;
+  --gold-light: #ffe091;
+  --crimson: #cd3443;
+  --teal: #19bea7;
+  --line: rgba(240, 180, 67, 0.34);
 }
 
 * {
@@ -133,7 +133,7 @@ a {
       rgba(7, 16, 24, 0.08) 100%
     ),
     linear-gradient(0deg, rgba(7, 16, 24, 0.9) 0%, rgba(7, 16, 24, 0) 45%),
-    url("./capital-preview-v24.png") center 58% / cover no-repeat;
+    url("./capital-preview-v26.png") center 58% / cover no-repeat;
   display: grid;
   min-height: 100svh;
   overflow: hidden;
@@ -661,7 +661,7 @@ blockquote {
 }
 
 .capital-section {
-  background-image: url("./capital-preview-v24.png");
+  background-image: url("./capital-preview-v26.png");
   display: flex;
   min-height: 900px;
 }
@@ -710,7 +710,7 @@ blockquote {
 }
 
 .war-section {
-  background-image: url("./siege-preview-v21.png");
+  background-image: url("./siege-preview-v26.png");
   display: flex;
   min-height: 900px;
 }
@@ -904,7 +904,7 @@ blockquote {
   align-items: center;
   background:
     linear-gradient(90deg, rgba(7, 16, 24, 0.98), rgba(7, 16, 24, 0.7)),
-    url("./world-preview-v24.png") center 58% / cover no-repeat;
+    url("./world-preview-v26.png") center 58% / cover no-repeat;
   display: grid;
   gap: clamp(3rem, 8vw, 8rem);
   grid-template-columns: minmax(0, 1fr) minmax(330px, 0.72fr);

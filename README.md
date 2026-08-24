@@ -1,7 +1,16 @@
-# CİHAN: Tahtın Çağı — V25
+# CİHAN: Tahtın Çağı — V26 Köz İmparatorluğu
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V26 Köz İmparatorluğu
+
+- Turkuaz çatıları, kızıl sancakları, altın meşale alayları ve askerî hareketliliğiyle baştan tasarlanan yaşayan payitaht
+- Güneyde aydınlık başkentten kuzeydeki fırtınalı kara hisara uzanan, on iki dokunulabilir hedefli yeni fetih dünyası
+- Hükümdar ve komutanların ışıklı kabartma harita çevresinde toplandığı Köz Harp Divanı
+- Üç savaş hattı, süvari, topçu, kale ve karşı ordularla yeniden tasarlanan canlı kuşatma atmosferi
+- Mat kahverengi tonların yerine turkuaz, kızıl ve altın kontrastlı tek parça sanat yönü
+- Android 0.26.0 / build 260; ARMv7 ve ARM64 desteği
 
 ## V25 Harp Divanı
 
@@ -101,6 +110,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V26 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v26.apk)
+- [Unity V26 kaynak paketi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V26-Kaynak.zip)
 - [Android V25 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v25.apk)
 - [Unity V25 kaynak paketi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V25-Kaynak.zip)
 - [Android V24 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v24.apk)
