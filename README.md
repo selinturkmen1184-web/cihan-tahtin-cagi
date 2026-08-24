@@ -1,7 +1,15 @@
-# CİHAN: Tahtın Çağı — V24
+# CİHAN: Tahtın Çağı — V25
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V25 Harp Divanı
+
+- Hedef bölgenin ordu gücü, düşman gücü, risk seviyesi, keşif bilgisi ve yürüyüş bedelini gösteren tam ekran Sefer Meclisi
+- Savaş öncesi seçilebilen Doğrudan Hücum, Casus Ağı, Sabotaj ve Rüşvet planları
+- Düşman moralini, hasar/dayanıklılığını veya asker sayısını canlı kuşatmada gerçekten değiştiren plan etkileri
+- Hazırlık ve yürüyüş bedelini tek işlemde uygulayan, yetersiz kaynakta kısmi harcamayı engelleyen güvenli ekonomi
+- Android 0.25.0 / build 250; ARMv7 ve ARM64 desteği
 
 ## V24 sinematik görsel dünya
 
@@ -93,6 +101,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V25 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v25.apk)
+- [Unity V25 kaynak paketi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V25-Kaynak.zip)
 - [Android V24 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v24.apk)
 - [Unity V24 kaynak paketi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V24-Kaynak.zip)
 - [Android V23 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v23.apk)
