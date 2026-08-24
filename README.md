@@ -1,7 +1,16 @@
-# CİHAN: Tahtın Çağı — V22
+# CİHAN: Tahtın Çağı — V23
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V23 canlı 3B fetih düzeni
+
+- Sabit şehir resmi yerine döndürülebilen, yakınlaştırılabilen ve dokunulabilir canlı 3B payitaht
+- Saray, çiftlik, kereste ocağı ve taş ocağında zamanlı üretim toplama; yapı geliştirme, araştırma ve asker eğitimi
+- Şehirde yürüyen halk, animasyonlu KayKit muhafızları, inşaat iskelesi, duman, bayrak ve çalışan değirmen
+- Karakolları, büyük hedef hisarları ve yürüyen ordusu bulunan canlı 3B 12 bölgeli sefer haritası
+- Seçilen hedefi erzak, ordu gücü ve kalıcı bölge fethiyle gerçek zamanlı kuşatmaya bağlayan uçtan uca oyun döngüsü
+- Android 0.23.0 / build 230; ARMv7 ve ARM64 desteği
 
 ## V22 tam ekran fetih düzeni
 
@@ -76,8 +85,8 @@ grand-strategy prototipi.
 
 ## İndir
 
-- [Android V22 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v22.apk)
-- [Unity V22 kaynak paketi](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/Cihan-Tahtin-Cagi-Unity-V22-Kaynak.zip)
+- [Android V23 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v23.apk)
+- [Unity V23 kaynak paketi](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/Cihan-Tahtin-Cagi-Unity-V23-Kaynak.zip)
 - [V12 krallık sunucusu](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v12/Cihan-Krallik-Sunucusu-V12.zip)
 - [Tanıtım ve indirme sayfası](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/)
 
