@@ -133,7 +133,7 @@ a {
       rgba(7, 16, 24, 0.08) 100%
     ),
     linear-gradient(0deg, rgba(7, 16, 24, 0.9) 0%, rgba(7, 16, 24, 0) 45%),
-    url("./capital-preview-v26.png") center 58% / cover no-repeat;
+    url("./cihan-battlefield-v28.png") center 58% / cover no-repeat;
   display: grid;
   min-height: 100svh;
   overflow: hidden;
@@ -710,7 +710,7 @@ blockquote {
 }
 
 .war-section {
-  background-image: url("./siege-preview-v26.png");
+  background-image: url("./cihan-battlefield-v28.png");
   display: flex;
   min-height: 900px;
 }

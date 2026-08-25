@@ -1,7 +1,15 @@
-# CİHAN: Tahtın Çağı — V26 Köz İmparatorluğu
+# CİHAN: Tahtın Çağı — V28 Altın Sefer
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V28 Altın Sefer
+
+- Lacivert, kızıl, fildişi ve altın renklerle yenilenen daha güçlü tarihî sanat yönü
+- Piyade, okçu, süvari, Şahi topçusu ve kumandan için sinematik, yüksek ayrıntılı yeni birlik görselleri
+- Yeni kuşatma meydanı ve savaşta karşılıklı ilerleyen, hedef bulan, saldıran ve hasar alan birlikler
+- Mobil için yüksek kaliteli ETC2 görsel sıkıştırması; daha hızlı açılış ve daha küçük indirme
+- Android 0.28.0 / build 280; ARMv7 ve ARM64; Android 8.0+
 
 ## V26 Köz İmparatorluğu
 
@@ -110,6 +118,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V28 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v28.apk)
+- [Unity V28 Altın Sefer güncellemesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-V28-Altin-Sefer-Guncellemesi.zip)
 - [Android V26 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v26.apk)
 - [Unity V26 kaynak paketi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V26-Kaynak.zip)
 - [Android V25 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v25.apk)
