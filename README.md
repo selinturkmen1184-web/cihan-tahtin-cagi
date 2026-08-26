@@ -1,7 +1,14 @@
-# CİHAN: Tahtın Çağı — V30 Çelik Saflar
+# CİHAN: Tahtın Çağı — V31 Meydan Ateşi
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V31 Meydan Ateşi
+
+- Savaş başladıktan bir saniye sonra iki ordu kendiliğinden ilerlemeye başlar.
+- Yakın dövüşte görünür kılıç izi, hamle animasyonu, toz ve saf düşüş bildirimi vardır.
+- Oyuncunun verdiği yürüyüş ve hücum emirleri savaş alanında işaretlenir.
+- V30 hedef kilidi, formasyon aralığı ve süvari çarpma sistemi korunmuştur.
 
 ## V30 Çelik Saflar
 
@@ -22,7 +29,7 @@ grand-strategy prototipi.
 - Casus ağı, sur sabotajı ve muhafız ayartma kararlarının savaşa doğrudan etkisi
 - Bekleme, yürüme, saldırı, darbe ve ölüm pozları içeren 25 karelik özgün asker atlası
 
-[V30 Çelik Saflar'ı oyna](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/)
+[V31 Meydan Ateşi'ni oyna](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/?v=31)
 
 ## V28 Altın Sefer
 
@@ -139,7 +146,7 @@ grand-strategy prototipi.
 
 ## İndir
 
-- [V30 Çelik Saflar — iPhone, Android ve bilgisayar](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/)
+- [V31 Meydan Ateşi — iPhone, Android ve bilgisayar](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/?v=31)
 - [Unity V30 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V30-Kaynak.zip)
 - [Android V28 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v28.apk)
 - [Unity V28 Altın Sefer güncellemesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-V28-Altin-Sefer-Guncellemesi.zip)

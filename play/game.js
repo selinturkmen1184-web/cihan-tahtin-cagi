@@ -42,12 +42,15 @@
   let nextEnemyOrder = 8;
   let nextUiUpdate = 0;
   let nextFortressFeedback = 0;
+  let openingOrdersIssued = false;
   let unitSerial = 0;
   let units = [];
   let unitById = new Map();
   let projectiles = [];
   let particles = [];
   let floatingText = [];
+  let strikeFx = [];
+  let orderMarkers = [];
   let cooldowns = { charge: 0, volley: 0, cannon: 0, rally: 0 };
 
   const rowFor = { infantry: 0, archer: 1, cavalry: 2, siege: 3, commander: 4 };
@@ -145,9 +148,9 @@
 
   function startBattle() {
     setupAudio();
-    units = []; unitById = new Map(); projectiles = []; particles = []; floatingText = [];
+    units = []; unitById = new Map(); projectiles = []; particles = []; floatingText = []; strikeFx = []; orderMarkers = [];
     elapsed = 0; friendlyLosses = 0; enemyLosses = 0; friendlyMorale = 92; enemyMorale = 84;
-    fortressMax = 1000; fortress = 1000; nextEnemyOrder = 7; nextUiUpdate = 0; nextFortressFeedback = 0; paused = false; battleSpeed = 1;
+    fortressMax = 1000; fortress = 1000; nextEnemyOrder = 6; nextUiUpdate = 0; nextFortressFeedback = 0; openingOrdersIssued = false; paused = false; battleSpeed = 1;
     cooldowns = { charge: 0, volley: 0, cannon: 0, rally: 0 };
 
     let enemyConfig = { infantry: 12, archer: 7, cavalry: 5, siege: 1, commander: 1 };
@@ -161,8 +164,27 @@
     showScreen("battle");
     document.querySelectorAll(".speed").forEach(b => b.classList.toggle("selected", b.dataset.speed === "1"));
     document.querySelectorAll(".unit-card").forEach(b => b.classList.toggle("selected", b.dataset.unit === selectedKind));
-    announce("Konuşlan! Birlik seç ve savaş alanına dokun.", 3.2);
+    announce("Saflar hazır! Birlik seç veya hücum emri ver.", 2.1);
     tone(196, .4, "sawtooth", .08, 95); tone(131, .65, "triangle", .06, 70);
+  }
+
+  function issueOpeningOrders() {
+    if (openingOrdersIssued) return;
+    openingOrdersIssued = true;
+    const friends = units.filter(u => u.team === "friendly" && !u.dead);
+    const enemies = units.filter(u => u.team === "enemy" && !u.dead);
+    friends.forEach((unit, index) => {
+      const target = enemies[(index * 5) % enemies.length];
+      if (!target) return;
+      unit.order = "advance"; unit.targetId = target.id; unit.targetX = target.x; unit.targetY = target.y;
+    });
+    enemies.forEach((unit, index) => {
+      const target = friends[(index * 7) % friends.length];
+      if (!target) return;
+      unit.order = "advance"; unit.targetId = target.id; unit.targetX = target.x; unit.targetY = target.y;
+    });
+    announce("Davullar vuruyor — iki ordu ilerliyor!", 2.2);
+    tone(92, .24, "square", .045, 22); setTimeout(() => tone(108, .3, "square", .04, 25), 280);
   }
 
   function nearestEnemy(unit) {
@@ -216,9 +238,15 @@
       burst(target.x, target.y - 15, 9, "#dfbd78");
     }
     floatingText.push({ x: target.x, y: target.y - 64, text: `-${Math.round(finalDamage)}`, color: heavy ? "#ffc96b" : "#fff1c4", life: .75 });
+    if (source) {
+      const angle = Math.atan2(target.y - source.y, target.x - source.x);
+      strikeFx.push({ x: (source.x + target.x) * .5, y: (source.y + target.y) * .5 - 25, angle, life: .24, max: .24, heavy });
+    }
     burst(target.x, target.y - 18, heavy ? 16 : 5, heavy ? "#e6a743" : "#cfbf92");
     if (target.hp <= 0) {
       target.hp = 0; target.dead = true; target.state = "dead"; target.fall = 0;
+      floatingText.push({ x: target.x, y: target.y - 88, text: "SAF DÜŞTÜ", color: target.team === "enemy" ? "#ffcf7a" : "#ff9188", life: 1.05 });
+      screenShake = Math.max(screenShake, target.kind === "commander" ? 11 : 3);
       if (target.team === "friendly") { friendlyLosses++; friendlyMorale = Math.max(15, friendlyMorale - 1.35); }
       else { enemyLosses++; enemyMorale = Math.max(8, enemyMorale - 1.6); }
       if (target.kind === "commander") {
@@ -282,7 +310,7 @@
       tx = post.x; ty = post.y;
     }
     if (unit.team === "enemy" && !near.unit) { tx = unit.x; ty = unit.y; }
-    if (near.unit && !obeyingMoveOrder && (unit.order === "charge" || near.distance < s.range + 150 || elapsed > 13)) { tx = near.unit.x; ty = near.unit.y; }
+    if (near.unit && !obeyingMoveOrder && (unit.order === "charge" || unit.order === "advance" || near.distance < s.range + 150 || elapsed > 6)) { tx = near.unit.x; ty = near.unit.y; }
 
     const dx = tx - unit.x, dy = ty - unit.y;
     const dist = Math.hypot(dx, dy);
@@ -305,11 +333,15 @@
 
     if (dist > 8) {
       const moraleSpeed = unit.team === "friendly" ? .72 + friendlyMorale / 330 : .72 + enemyMorale / 330;
-      const speed = s.speed * moraleSpeed * (unit.order === "charge" ? 1.25 : 1);
+      const orderSpeed = unit.order === "charge" ? 1.28 : unit.order === "advance" ? 1.1 : 1;
+      const speed = s.speed * moraleSpeed * orderSpeed;
       unit.x += dx / dist * speed * dt; unit.y += dy / dist * speed * dt;
       unit.x = Math.max(52, Math.min(W - 52, unit.x)); unit.y = Math.max(300, Math.min(H - 210, unit.y));
       unit.facing = dx >= 0 ? 1 : -1;
       if (unit.hit <= 0) unit.state = "walk";
+      if (Math.random() < dt * (unit.kind === "cavalry" ? 4.5 : 1.4)) {
+        particles.push({ x: unit.x + (Math.random() - .5) * 22, y: unit.y + 3, vx: (Math.random() - .5) * 18, vy: -10 - Math.random() * 16, life: .42, max: .42, size: 5 + Math.random() * 8, color: "#b79b70" });
+      }
     } else {
       if (unit.order === "move") unit.order = "hold";
       if (unit.hit <= 0 && unit.state !== "attack") unit.state = "idle";
@@ -402,8 +434,11 @@
     particles.forEach(p => { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 150 * dt; p.vx *= .985; });
     particles = particles.filter(p => p.life > 0);
     floatingText.forEach(f => { f.life -= dt; f.y -= 28 * dt; }); floatingText = floatingText.filter(f => f.life > 0);
+    strikeFx.forEach(f => f.life -= dt); strikeFx = strikeFx.filter(f => f.life > 0);
+    orderMarkers.forEach(m => { m.life -= dt; m.radius += dt * 72; }); orderMarkers = orderMarkers.filter(m => m.life > 0);
     screenShake *= .88;
 
+    if (elapsed >= 1.05) issueOpeningOrders();
     if (elapsed >= nextEnemyOrder) { nextEnemyOrder += 10 + Math.random() * 7; enemyAI(); }
     const friendlyAlive = units.filter(u => u.team === "friendly" && !u.dead).length;
     const enemyAlive = units.filter(u => u.team === "enemy" && !u.dead).length;
@@ -417,8 +452,8 @@
   }
 
   function phaseName(enemyAlive) {
-    if (elapsed < 5) return "KONUŞLANMA";
-    if (elapsed < 13) return "İLERLEYİŞ";
+    if (elapsed < 1.1) return "KONUŞLANMA";
+    if (elapsed < 6) return "İLERLEYİŞ";
     if (fortress <= 0) return "SON HÜCUM";
     if (enemyAlive <= 7 || fortress < fortressMax * .52) return "SUR YARMA";
     return "MEYDAN SAVAŞI";
@@ -461,7 +496,19 @@
     const col = frameFor(unit); const row = rowFor[unit.kind];
     const sw = atlas.width / 5, sh = atlas.height / 5;
     ctx.save();
-    ctx.translate(unit.x, unit.y);
+    const walkBob = unit.state === "walk" ? Math.sin(unit.stateTime * 11 + unit.id) * 3.2 : 0;
+    let lungeX = 0, lungeY = 0;
+    if (unit.state === "attack" && unit.stateTime < .36) {
+      const target = unitById.get(unit.targetId);
+      const power = Math.sin(unit.stateTime / .36 * Math.PI) * (unit.kind === "cavalry" ? 22 : 12);
+      if (target) {
+        const dx = target.x - unit.x, dy = target.y - unit.y, distance = Math.max(1, Math.hypot(dx, dy));
+        lungeX = dx / distance * power; lungeY = dy / distance * power;
+      }
+    }
+    ctx.translate(unit.x + lungeX, unit.y + lungeY + walkBob);
+    ctx.fillStyle = unit.dead ? "rgba(0,0,0,.15)" : "rgba(0,0,0,.34)";
+    ctx.beginPath(); ctx.ellipse(0, 5, size * .34, size * .1, 0, 0, Math.PI * 2); ctx.fill();
     if (unit.selected && !unit.dead) {
       ctx.strokeStyle = "#ffd26e"; ctx.lineWidth = 3; ctx.globalAlpha = .88;
       ctx.beginPath(); ctx.ellipse(0, 8, size * .38, size * .13, 0, 0, Math.PI * 2); ctx.stroke();
@@ -514,6 +561,20 @@
           ctx.beginPath(); ctx.arc(p.x, p.y, 10, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
         }
       }
+      for (const marker of orderMarkers) {
+        ctx.globalAlpha = Math.max(0, marker.life / marker.max);
+        ctx.strokeStyle = marker.color; ctx.lineWidth = 5;
+        ctx.beginPath(); ctx.arc(marker.x, marker.y, marker.radius, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(marker.x - 16, marker.y); ctx.lineTo(marker.x + 16, marker.y); ctx.moveTo(marker.x, marker.y - 16); ctx.lineTo(marker.x, marker.y + 16); ctx.stroke();
+      }
+      for (const slash of strikeFx) {
+        const alpha = Math.max(0, slash.life / slash.max);
+        const length = slash.heavy ? 48 : 33;
+        ctx.save(); ctx.translate(slash.x, slash.y); ctx.rotate(slash.angle + Math.PI * .28);
+        ctx.globalAlpha = alpha; ctx.strokeStyle = slash.heavy ? "#ffd37a" : "#fff0bd"; ctx.lineWidth = slash.heavy ? 8 : 5;
+        ctx.shadowColor = "#ffb34f"; ctx.shadowBlur = 14;
+        ctx.beginPath(); ctx.moveTo(-length, 0); ctx.lineTo(length, 0); ctx.stroke(); ctx.restore();
+      }
       for (const p of particles) { ctx.globalAlpha = Math.max(0, p.life / p.max); ctx.fillStyle = p.color; ctx.fillRect(p.x, p.y, p.size, p.size); }
       ctx.globalAlpha = 1;
       for (const f of floatingText) { ctx.globalAlpha = Math.min(1, f.life * 2); ctx.fillStyle = f.color; ctx.font = "bold 21px ui-sans-serif"; ctx.textAlign = "center"; ctx.fillText(f.text, f.x, f.y); }
@@ -545,6 +606,7 @@
     const enemies = units.filter(u => u.team === "enemy" && !u.dead);
     if (command === "charge") {
       cooldowns.charge = 11; friends.forEach((u, i) => { u.order = "charge"; u.bonus = Math.max(u.bonus, 1.16); if (enemies.length) { const t = enemies[(i * 3) % enemies.length]; u.targetX = t.x; u.targetY = t.y; u.targetId = t.id; } });
+      orderMarkers.push({ x: 512, y: 710, radius: 18, life: .85, max: .85, color: "#f5c95f" });
       friendlyMorale = Math.min(100, friendlyMorale + 5); announce("Cihan için hücum! Bütün hatlar ileri!", 2.5); tone(180, .42, "sawtooth", .09, 120);
     }
     if (command === "volley") {
@@ -579,6 +641,7 @@
       u.order = p.y < u.y - 100 ? "charge" : "move"; u.targetId = null; u.selected = true;
     });
     units.filter(u => u.team === "friendly" && u.kind !== selectedKind).forEach(u => u.selected = false);
+    orderMarkers.push({ x: p.x, y: p.y, radius: 14, life: .8, max: .8, color: "#f2c96e" });
     burst(p.x, p.y, 9, "#f2c96e"); announce(`${unitLabels[selectedKind]} birliğine yürüyüş emri verildi.`, 1.4); tone(260, .08, "triangle", .025, 50);
   });
 
