@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+  <meta name="theme-color" content="#071019">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>CİHAN: Tahtın Çağı · Canlı Kuşatma</title>
+  <meta name="description" content="CİHAN V29 Canlı Kuşatma: birliklerini yönet, entrika kur, surları yar ve şehri fethet.">
+  <link rel="stylesheet" href="./game.css">
+</head>
+<body>
+  <main id="game-shell" aria-label="CİHAN Canlı Kuşatma">
+    <canvas id="battlefield" width="1024" height="1536" aria-label="Canlı kuşatma savaş alanı"></canvas>
+
+    <section id="campaign" class="screen active" aria-labelledby="campaign-title">
+      <div class="campaign-top">
+        <p class="kicker">CİHAN V29 · ALTIN SEFER</p>
+        <h1 id="campaign-title">Tahtın Çağı</h1>
+        <p class="campaign-copy">Divanı topla, ordunu hazırla ve Konstantiniyye surlarına yürü.</p>
+      </div>
+
+      <div class="province-card">
+        <div class="province-seal" aria-hidden="true">☾</div>
+        <div>
+          <span>HEDEF ŞEHİR</span>
+          <h2>Konstantiniyye</h2>
+          <p>Sur seviyesi 5 · Savunma 8.420 · Büyük ganimet</p>
+        </div>
+        <div class="threat">ZOR</div>
+      </div>
+
+      <div class="council-grid" aria-label="Harp Divanı kararları">
+        <button class="plot selected" data-plot="scout">
+          <span class="plot-icon">⌖</span><b>Casus Ağı</b><small>Düşman sayısı görünür<br>+%8 ilk vuruş</small>
+        </button>
+        <button class="plot" data-plot="sabotage">
+          <span class="plot-icon">♜</span><b>Sur Sabotajı</b><small>Sur -%18 dayanıklılık<br>Düşman moral -12</small>
+        </button>
+        <button class="plot" data-plot="bribe">
+          <span class="plot-icon">◆</span><b>Muhafızları Ayart</b><small>4 savunmacı çekilir<br>Hazine -240</small>
+        </button>
+      </div>
+
+      <div class="formation-row" aria-label="Savaş düzeni">
+        <button class="formation selected" data-formation="crescent">HİLAL</button>
+        <button class="formation" data-formation="line">HAT</button>
+        <button class="formation" data-formation="wedge">KAMA</button>
+      </div>
+
+      <button id="start-battle" class="war-button"><span>Kuşatmayı Başlat</span><small>ORDU 9.140 · MORAL 92</small></button>
+      <p class="original-note">Özgün tarihî strateji oyunu · Esinlenilmiş, birebir kopya değildir</p>
+    </section>
+
+    <section id="battle-ui" class="screen" aria-label="Savaş komutları">
+      <header class="battle-header">
+        <div class="side-score friendly"><span>ORDUN</span><b id="friendly-count">30</b><i id="friendly-morale">Moral 92</i></div>
+        <div class="battle-clock"><span id="phase-label">KONUŞLANMA</span><b id="battle-time">01:36</b></div>
+        <div class="side-score enemy"><span>MUHAFIZLAR</span><b id="enemy-count">26</b><i id="enemy-morale">Moral 84</i></div>
+      </header>
+
+      <div class="fortress-hud">
+        <div class="fortress-label"><span>SUR DAYANIKLILIĞI</span><b id="fortress-percent">100%</b></div>
+        <div class="fortress-track"><i id="fortress-fill"></i></div>
+      </div>
+
+      <div id="battle-message" class="battle-message">Birlik seç, savaş alanına dokun ve emir ver.</div>
+
+      <div class="speed-controls" aria-label="Savaş hızı">
+        <button id="pause-button" aria-label="Duraklat">Ⅱ</button>
+        <button class="speed selected" data-speed="1">1×</button>
+        <button class="speed" data-speed="2">2×</button>
+        <button class="speed" data-speed="3">3×</button>
+        <button id="sound-button" aria-label="Sesi aç veya kapat">♪</button>
+      </div>
+
+      <div class="unit-dock" aria-label="Birlik seçimi">
+        <button class="unit-card selected" data-unit="infantry"><i class="portrait row-0"></i><span>PİYADE</span><b id="infantry-count">12</b></button>
+        <button class="unit-card" data-unit="archer"><i class="portrait row-1"></i><span>OKÇU</span><b id="archer-count">6</b></button>
+        <button class="unit-card" data-unit="cavalry"><i class="portrait row-2"></i><span>SÜVARİ</span><b id="cavalry-count">8</b></button>
+        <button class="unit-card" data-unit="siege"><i class="portrait row-3"></i><span>ŞAHİ</span><b id="siege-count">3</b></button>
+        <button class="unit-card" data-unit="commander"><i class="portrait row-4"></i><span>PAŞA</span><b id="commander-count">1</b></button>
+      </div>
+
+      <nav class="command-dock" aria-label="Özel savaş emirleri">
+        <button class="command" data-command="charge"><span>⚔</span><b>HÜCUM</b><i class="cooldown"></i></button>
+        <button class="command" data-command="volley"><span>➶</span><b>OK YAĞMURU</b><i class="cooldown"></i></button>
+        <button class="command gold" data-command="cannon"><span>✹</span><b>ŞAHİ ATEŞİ</b><i class="cooldown"></i></button>
+        <button class="command" data-command="rally"><span>♜</span><b>SANCAĞA</b><i class="cooldown"></i></button>
+      </nav>
+    </section>
+
+    <section id="result" class="screen result-screen" aria-live="polite">
+      <div class="result-panel">
+        <p class="kicker" id="result-kicker">ŞEHİR DÜŞTÜ</p>
+        <h2 id="result-title">Fetih Tamamlandı</h2>
+        <div class="result-seal">☾</div>
+        <p id="result-copy">Surlar yarıldı, muhafızlar dağıldı. Konstantiniyye artık CİHAN sancağı altında.</p>
+        <div class="result-stats">
+          <div><span>SÜRE</span><b id="result-time">00:00</b></div>
+          <div><span>KAYIP</span><b id="result-losses">0</b></div>
+          <div><span>FETİH PUANI</span><b id="result-score">0</b></div>
+        </div>
+        <button id="replay-button" class="war-button">Yeniden Kuşat</button>
+        <a href="../">Ana sayfaya dön</a>
+      </div>
+    </section>
+
+    <div id="rotate-hint"><span>↻</span> En iyi deneyim için telefonu dik tut.</div>
+  </main>
+  <script src="./game.js"></script>
+</body>
+</html>

@@ -1,7 +1,20 @@
-# CİHAN: Tahtın Çağı — V28 Altın Sefer
+# CİHAN: Tahtın Çağı — V29 Canlı Kuşatma
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V29 Canlı Kuşatma
+
+- iPhone Safari, Android ve bilgisayarda kurulum gerektirmeden oynanabilen savaş dilimi
+- Seçilebilir piyade, okçu, süvari, Şahi topçusu ve komutan birlikleri
+- Savaş alanına dokunarak yürüyüş ve hedef emri verme
+- Hücum, ok yağmuru, Şahi ateşi ve sancağa toplanma komutları
+- Düşman karşı saldırısı, birlik canı, kayıp, moral ve 96 saniyelik savaş süresi
+- Gerçek sur dayanıklılığı, sur yarılması, son hücum ve fetih/yenilgi sonucu
+- Casus ağı, sur sabotajı ve muhafız ayartma kararlarının savaşa doğrudan etkisi
+- Bekleme, yürüme, saldırı, darbe ve ölüm pozları içeren 25 karelik özgün asker atlası
+
+[V29 Canlı Kuşatmayı oyna](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/)
 
 ## V28 Altın Sefer
 
@@ -118,6 +131,7 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [V29 Canlı Kuşatma — iPhone, Android ve bilgisayar](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/)
 - [Android V28 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v28.apk)
 - [Unity V28 Altın Sefer güncellemesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-V28-Altin-Sefer-Guncellemesi.zip)
 - [Android V26 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v26.apk)

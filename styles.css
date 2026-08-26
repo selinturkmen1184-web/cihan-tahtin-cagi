@@ -224,6 +224,17 @@ a {
   transform: translateY(-2px);
 }
 
+.secondary-button {
+  background: rgba(7, 16, 24, 0.72);
+  border: 1px solid rgba(214, 177, 95, 0.72);
+  color: var(--gold-light);
+}
+
+.secondary-button:hover,
+.secondary-button:focus-visible {
+  background: rgba(31, 44, 52, 0.94);
+}
+
 .hero-actions > span {
   color: var(--muted);
   font-size: 0.78rem;
