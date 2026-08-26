@@ -1,7 +1,17 @@
-# CİHAN: Tahtın Çağı — V31 Meydan Ateşi
+# CİHAN: Tahtın Çağı — V32 İmparatorluk
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V32 İmparatorluk
+
+- Kaynak üreten ve kaydı tarayıcıda korunan yaşayan Payitaht ekranı.
+- Dokunulabilir Saray, Kışla, Akademi, Çarşı, Çiftlik ve Taş Ocağı; gerçek maliyetle yükseltme.
+- Piyade, okçu, süvari ve Şahi eğitimi; kapasite ve ordu kudreti.
+- Üç kahramanlı sefer kadrosu ve devlet değerlerini etkileyen Divan kararları.
+- Kilit açılan beş görevli sefer haritası, yıldız sistemi, enerji ve savaş ganimeti.
+- V31 gerçek zamanlı kuşatma sistemi şehir–gelişim–sefer döngüsüne bağlandı.
+- Özgün şehir ve sefer haritası görselleri: `play/city-v32.jpg`, `play/campaign-map-v32.jpg`.
 
 ## V31 Meydan Ateşi
 
@@ -29,7 +39,7 @@ grand-strategy prototipi.
 - Casus ağı, sur sabotajı ve muhafız ayartma kararlarının savaşa doğrudan etkisi
 - Bekleme, yürüme, saldırı, darbe ve ölüm pozları içeren 25 karelik özgün asker atlası
 
-[V31 Meydan Ateşi'ni oyna](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/?v=31)
+[V32 İmparatorluk'u oyna](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/?v=32)
 
 ## V28 Altın Sefer
 
@@ -146,7 +156,7 @@ grand-strategy prototipi.
 
 ## İndir
 
-- [V31 Meydan Ateşi — iPhone, Android ve bilgisayar](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/?v=31)
+- [V32 İmparatorluk — iPhone, Android ve bilgisayar](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/?v=32)
 - [Unity V30 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V30-Kaynak.zip)
 - [Android V28 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v28.apk)
 - [Unity V28 Altın Sefer güncellemesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-V28-Altin-Sefer-Guncellemesi.zip)

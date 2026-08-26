@@ -13,14 +13,16 @@
   atlas.src = "./unit-atlas-v29.png";
 
   const ui = {
+    city: document.querySelector("#city"), map: document.querySelector("#map"), army: document.querySelector("#army"), council: document.querySelector("#council"),
     campaign: document.querySelector("#campaign"), battle: document.querySelector("#battle-ui"), result: document.querySelector("#result"),
+    resourceBar: document.querySelector("#resource-bar"), toast: document.querySelector("#toast"), buildingSheet: document.querySelector("#building-sheet"),
     friendlyCount: document.querySelector("#friendly-count"), enemyCount: document.querySelector("#enemy-count"),
     friendlyMorale: document.querySelector("#friendly-morale"), enemyMorale: document.querySelector("#enemy-morale"),
     fortressFill: document.querySelector("#fortress-fill"), fortressPercent: document.querySelector("#fortress-percent"),
     phase: document.querySelector("#phase-label"), time: document.querySelector("#battle-time"), message: document.querySelector("#battle-message")
   };
 
-  let mode = "campaign";
+  let mode = "city";
   let chosenPlot = "scout";
   let formation = "crescent";
   let selectedKind = "infantry";
@@ -52,6 +54,45 @@
   let strikeFx = [];
   let orderMarkers = [];
   let cooldowns = { charge: 0, volley: 0, cannon: 0, rally: 0 };
+  let toastTimer = 0;
+  let currentBuilding = "palace";
+  let currentMission = 0;
+  let pendingResult = null;
+
+  const buildingDefs = {
+    palace: { name: "Saray", icon: "♜", description: "İmparatorluğun kalbi. Şehir kapasitesini ve bütün yapıların üst sınırını artırır.", effect: level => `Kapasite +${25 + level * 5}` },
+    barracks: { name: "Kışla", icon: "⚔", description: "Piyade, okçu ve süvari yetiştirir. Her seviye eğitim kapasitesini artırır.", effect: level => `Eğitim +%${level * 8}` },
+    academy: { name: "Akademi", icon: "✦", description: "Askerî teknolojileri ve kahraman yeteneklerini geliştirir.", effect: level => `Savaş +%${level * 4}` },
+    market: { name: "Çarşı", icon: "◈", description: "Ticaret gelirini ve altın üretimini yükseltir.", effect: level => `Altın +${level * 55}/s` },
+    farm: { name: "Çiftlik", icon: "♨", description: "Şehrin ve ordunun ihtiyaç duyduğu erzağı üretir.", effect: level => `Erzak +${level * 90}/s` },
+    quarry: { name: "Taş Ocağı", icon: "◆", description: "Surlar ve büyük yapılar için taş çıkarır.", effect: level => `Taş +${level * 65}/s` }
+  };
+
+  const missions = [
+    { name: "Hudut Karakolu", copy: "İsyancı kuvvetleri dağıt ve imparatorluğun yolunu aç.", power: 7800, wall: 1, fortress: 700, threat: "NORMAL", rewardFood: 900, rewardGold: 420, enemy: { infantry: 8, archer: 5, cavalry: 3, siege: 0, commander: 1 } },
+    { name: "Dağ Geçidi", copy: "Dar geçidi tutan birlikleri yen ve ikmal yolunu güvenceye al.", power: 10500, wall: 2, fortress: 850, threat: "ÇETİN", rewardFood: 1200, rewardGold: 560, enemy: { infantry: 10, archer: 6, cavalry: 4, siege: 1, commander: 1 } },
+    { name: "Kartal Şehir", copy: "Yüksek surları yar, bölgenin ticaret merkezini ele geçir.", power: 13200, wall: 3, fortress: 1000, threat: "ZOR", rewardFood: 1550, rewardGold: 720, enemy: { infantry: 12, archer: 7, cavalry: 5, siege: 1, commander: 1 } },
+    { name: "Demirhisar", copy: "Beylerbeyinin seçkin ordusunu meydanda mağlup et.", power: 16900, wall: 4, fortress: 1180, threat: "ÇOK ZOR", rewardFood: 2000, rewardGold: 920, enemy: { infantry: 14, archer: 8, cavalry: 6, siege: 2, commander: 1 } },
+    { name: "Akdeniz Kapısı", copy: "Liman kalesini düşür ve donanmanın önünü aç.", power: 20600, wall: 5, fortress: 1360, threat: "EFSANEVİ", rewardFood: 2700, rewardGold: 1250, enemy: { infantry: 16, archer: 9, cavalry: 7, siege: 2, commander: 1 } }
+  ];
+
+  const empireDefaults = {
+    food: 6200, wood: 4800, stone: 3900, gold: 1250, energy: 8, unlockedMission: 0,
+    missionStars: [0, 0, 0, 0, 0], buildings: { palace: 4, barracks: 1, academy: 1, market: 2, farm: 2, quarry: 1 },
+    troops: { infantry: 12, archer: 6, cavalry: 8, siege: 3, commander: 1 }, realm: { people: 84, prestige: 61, defence: 47 },
+    decrees: {}, lastCollect: 0, lastEnergyAt: Date.now()
+  };
+
+  function loadEmpire() {
+    try {
+      const saved = JSON.parse(localStorage.getItem("cihan-v32-empire") || "null");
+      const base = JSON.parse(JSON.stringify(empireDefaults));
+      if (!saved) return base;
+      return { ...base, ...saved, buildings: { ...empireDefaults.buildings, ...(saved.buildings || {}) }, troops: { ...empireDefaults.troops, ...(saved.troops || {}) }, realm: { ...empireDefaults.realm, ...(saved.realm || {}) }, decrees: saved.decrees || {} };
+    } catch (_) { return JSON.parse(JSON.stringify(empireDefaults)); }
+  }
+
+  let empire = loadEmpire();
 
   const rowFor = { infantry: 0, archer: 1, cavalry: 2, siege: 3, commander: 4 };
   const unitLabels = { infantry: "Piyade", archer: "Okçu", cavalry: "Süvari", siege: "Şahi", commander: "Paşa" };
@@ -64,11 +105,144 @@
   };
 
   function showScreen(name) {
-    [ui.campaign, ui.battle, ui.result].forEach((el) => el.classList.remove("active"));
-    if (name === "campaign") ui.campaign.classList.add("active");
-    if (name === "battle") ui.battle.classList.add("active");
-    if (name === "result") ui.result.classList.add("active");
+    [ui.city, ui.map, ui.army, ui.council, ui.campaign, ui.battle, ui.result].forEach((el) => el.classList.remove("active"));
+    const target = name === "battle" ? ui.battle : ui[name];
+    if (target) { target.classList.add("active"); target.scrollTop = 0; }
+    const resetViewport = () => { window.scrollTo(0, 0); document.documentElement.scrollTop = 0; document.body.scrollTop = 0; document.querySelector("#game-shell").scrollTop = 0; if (target) target.scrollTop = 0; };
+    resetViewport(); requestAnimationFrame(resetViewport); setTimeout(resetViewport, 50);
+    ui.resourceBar.classList.toggle("hidden", name === "battle" || name === "campaign" || name === "result");
     mode = name;
+  }
+
+  function saveEmpire() {
+    try { localStorage.setItem("cihan-v32-empire", JSON.stringify(empire)); } catch (_) { /* Private mode may block storage. */ }
+  }
+
+  function number(value) { return Math.round(value).toLocaleString("tr-TR"); }
+
+  function armyPower() {
+    const t = empire.troops;
+    return Math.round(t.infantry * 150 + t.archer * 175 + t.cavalry * 245 + t.siege * 330 + t.commander * 1310 + empire.buildings.academy * 260);
+  }
+
+  function troopTotal() { return Object.values(empire.troops).reduce((sum, value) => sum + value, 0); }
+  function troopCapacity() { return 25 + empire.buildings.palace * 5; }
+
+  function showToast(text) {
+    ui.toast.textContent = text; ui.toast.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => ui.toast.classList.remove("show"), 2200);
+  }
+
+  function recoverEnergy() {
+    const now = Date.now(); if (!empire.lastEnergyAt) empire.lastEnergyAt = now;
+    const gained = Math.floor((now - empire.lastEnergyAt) / 60000);
+    if (gained > 0) { empire.energy = Math.min(10, empire.energy + gained); empire.lastEnergyAt += gained * 60000; saveEmpire(); return true; }
+    return false;
+  }
+
+  function updateEmpireUI() {
+    document.querySelector("#food-value").textContent = number(empire.food);
+    document.querySelector("#wood-value").textContent = number(empire.wood);
+    document.querySelector("#stone-value").textContent = number(empire.stone);
+    document.querySelector("#gold-value").textContent = number(empire.gold);
+    const power = armyPower();
+    const cityPower = Object.values(empire.buildings).reduce((sum, level) => sum + level * 310, 0);
+    document.querySelector("#power-value").textContent = number(power + cityPower);
+    document.querySelector("#army-power").textContent = number(power);
+    document.querySelector("#army-capacity").textContent = `${troopTotal()} / ${troopCapacity()}`;
+    document.querySelector("#troop-total").textContent = `${troopTotal()} asker`;
+    document.querySelector("#battle-power-label").textContent = `ORDU ${number(power)} · ENERJİ -2`;
+    document.querySelector("#energy-value").textContent = `${empire.energy} / 10`;
+    document.querySelector("#campaign-stars").textContent = empire.missionStars.reduce((sum, value) => sum + value, 0);
+    Object.entries(empire.buildings).forEach(([key, level]) => document.querySelectorAll(`[data-level-for="${key}"]`).forEach(el => { el.textContent = level; }));
+    Object.entries(empire.troops).forEach(([kind, count]) => {
+      const roster = document.querySelector(`#roster-${kind}`); if (roster) roster.textContent = count;
+    });
+    document.querySelector("#people-stat").textContent = empire.realm.people;
+    document.querySelector("#prestige-stat").textContent = empire.realm.prestige;
+    document.querySelector("#defence-stat").textContent = empire.realm.defence;
+    document.querySelectorAll(".mission-node").forEach((node) => {
+      const index = Number(node.dataset.mission); const stars = empire.missionStars[index] || 0;
+      node.classList.toggle("locked", index > empire.unlockedMission);
+      node.classList.toggle("completed", stars > 0);
+      node.classList.toggle("current", index === empire.unlockedMission && stars === 0);
+      if (stars > 0) node.querySelector("span").textContent = "★".repeat(stars);
+    });
+    if (empire.buildings.barracks < 2) {
+      document.querySelector("#quest-title").textContent = "Kışlayı 2. seviyeye yükselt"; document.querySelector("#quest-progress").textContent = "0 / 1";
+    } else if (troopTotal() < 34) {
+      document.querySelector("#quest-title").textContent = "Ordunu 34 askere çıkar"; document.querySelector("#quest-progress").textContent = `${troopTotal()} / 34`;
+    } else if ((empire.missionStars[0] || 0) === 0) {
+      document.querySelector("#quest-title").textContent = "Hudut Karakolu'nu fethet"; document.querySelector("#quest-progress").textContent = "0 / 1";
+    } else {
+      document.querySelector("#quest-title").textContent = "Dağ Geçidi seferini tamamla"; document.querySelector("#quest-progress").textContent = `${empire.missionStars[1] ? 1 : 0} / 1`;
+    }
+  }
+
+  function buildingCost(key) {
+    const level = empire.buildings[key];
+    const scale = 1 + level * .42;
+    return { food: Math.round(300 * scale), wood: Math.round(260 * scale), stone: Math.round((key === "farm" ? 150 : 220) * scale) };
+  }
+
+  function openBuilding(key) {
+    const def = buildingDefs[key]; if (!def) return;
+    currentBuilding = key; const level = empire.buildings[key]; const cost = buildingCost(key);
+    document.querySelector("#building-icon").textContent = def.icon; document.querySelector("#building-name").textContent = def.name;
+    document.querySelector("#building-description").textContent = def.description; document.querySelector("#building-level").textContent = level;
+    document.querySelector("#building-effect").textContent = def.effect(level); document.querySelector("#building-time").textContent = level < 3 ? "Anında" : `${level * 2} dk`;
+    document.querySelector("#building-cost").textContent = `${number(cost.food)} ♨ · ${number(cost.wood)} ▥ · ${number(cost.stone)} ◆`;
+    ui.buildingSheet.classList.add("open"); ui.buildingSheet.setAttribute("aria-hidden", "false"); tone(250, .07, "triangle", .02, 35);
+  }
+
+  function closeBuilding() { ui.buildingSheet.classList.remove("open"); ui.buildingSheet.setAttribute("aria-hidden", "true"); }
+
+  function upgradeBuilding() {
+    const cost = buildingCost(currentBuilding);
+    if (empire.food < cost.food || empire.wood < cost.wood || empire.stone < cost.stone) { showToast("Yükseltme için yeterli kaynak yok."); tone(95, .15, "square", .025, -20); return; }
+    empire.food -= cost.food; empire.wood -= cost.wood; empire.stone -= cost.stone; empire.buildings[currentBuilding]++;
+    const def = buildingDefs[currentBuilding]; burst(512, 850, 18, "#e6bd63"); saveEmpire(); updateEmpireUI(); openBuilding(currentBuilding); showToast(`${def.name} ${empire.buildings[currentBuilding]}. seviyeye yükseldi!`); tone(196, .18, "triangle", .05, 120);
+  }
+
+  function trainTroops(kind) {
+    const training = { infantry: { amount: 2, resource: "food", cost: 420 }, archer: { amount: 2, resource: "food", cost: 360 }, cavalry: { amount: 1, resource: "food", cost: 520 }, siege: { amount: 1, resource: "stone", cost: 650 } }[kind];
+    if (!training) return;
+    if (troopTotal() + training.amount > troopCapacity()) { showToast("Ordu kapasitesi dolu. Sarayı yükselt."); return; }
+    if (empire[training.resource] < training.cost) { showToast(training.resource === "food" ? "Yeterli erzak yok." : "Yeterli taş yok."); return; }
+    empire[training.resource] -= training.cost; empire.troops[kind] += training.amount; saveEmpire(); updateEmpireUI();
+    showToast(`${unitLabels[kind]} birliğine ${training.amount} asker katıldı.`); tone(175, .12, "triangle", .035, 70);
+  }
+
+  function collectProduction() {
+    const now = Date.now(); const elapsedSeconds = empire.lastCollect ? Math.max(3, Math.min(120, (now - empire.lastCollect) / 1000)) : 28;
+    const foodGain = Math.round(elapsedSeconds * empire.buildings.farm * 15); const woodGain = Math.round(elapsedSeconds * empire.buildings.market * 8); const stoneGain = Math.round(elapsedSeconds * empire.buildings.quarry * 6); const goldGain = Math.round(elapsedSeconds * empire.buildings.market * 2.2);
+    empire.food += foodGain; empire.wood += woodGain; empire.stone += stoneGain; empire.gold += goldGain; empire.lastCollect = now; saveEmpire(); updateEmpireUI();
+    showToast(`Üretim toplandı: +${number(foodGain)} erzak, +${number(goldGain)} altın`); tone(330, .12, "triangle", .035, 100);
+  }
+
+  function applyDecree(type) {
+    if (empire.decrees[type]) { showToast("Bu karar zaten yürürlükte."); return; }
+    if (type === "envoy") {
+      if (empire.gold < 180) { showToast("Elçi için yeterli altın yok."); return; }
+      empire.gold -= 180; empire.realm.prestige = Math.min(100, empire.realm.prestige + 8); showToast("Elçi yola çıktı. İtibar +8");
+    }
+    if (type === "fortify") {
+      if (empire.stone < 260) { showToast("Tahkimat için yeterli taş yok."); return; }
+      empire.stone -= 260; empire.realm.defence = Math.min(100, empire.realm.defence + 10); showToast("Hudut güçlendirildi. Savunma +10");
+    }
+    if (type === "raid") {
+      if (empire.food < 320) { showToast("Akın için yeterli erzak yok."); return; }
+      empire.food -= 320; const loot = 260 + Math.round(Math.random() * 240); empire.gold += loot; empire.realm.people = Math.max(1, empire.realm.people - 3); showToast(`Akıncılar ${loot} altın ganimetle döndü.`);
+    }
+    empire.decrees[type] = true; saveEmpire(); updateEmpireUI(); tone(145, .18, "sawtooth", .04, 80);
+  }
+
+  function prepareMission(index) {
+    if (index > empire.unlockedMission) { showToast("Bu sefer henüz kilitli. Önce önceki bölümü fethet."); tone(90, .12, "square", .02, -20); return; }
+    currentMission = index; const mission = missions[index];
+    document.querySelector("#campaign-title").textContent = mission.name; document.querySelector("#target-city").textContent = mission.name;
+    document.querySelector("#campaign-copy").textContent = mission.copy; document.querySelector("#target-detail").textContent = `Sur seviyesi ${mission.wall} · Savunma ${number(mission.power)} · Ganimet ${number(mission.rewardFood)}`;
+    document.querySelector("#target-threat").textContent = mission.threat; showScreen("campaign");
   }
 
   function setupAudio() {
@@ -147,16 +321,20 @@
   }
 
   function startBattle() {
+    if (empire.energy < 2) { showToast("Sefer enerjisi yetersiz. Biraz sonra tekrar dene."); return; }
+    if (chosenPlot === "bribe" && empire.gold < 240) { showToast("Muhafızları ayartmak için 240 altın gerekiyor."); return; }
     setupAudio();
     units = []; unitById = new Map(); projectiles = []; particles = []; floatingText = []; strikeFx = []; orderMarkers = [];
     elapsed = 0; friendlyLosses = 0; enemyLosses = 0; friendlyMorale = 92; enemyMorale = 84;
-    fortressMax = 1000; fortress = 1000; nextEnemyOrder = 6; nextUiUpdate = 0; nextFortressFeedback = 0; openingOrdersIssued = false; paused = false; battleSpeed = 1;
+    const mission = missions[currentMission];
+    fortressMax = mission.fortress; fortress = mission.fortress; nextEnemyOrder = 6; nextUiUpdate = 0; nextFortressFeedback = 0; openingOrdersIssued = false; paused = false; battleSpeed = 1;
     cooldowns = { charge: 0, volley: 0, cannon: 0, rally: 0 };
 
-    let enemyConfig = { infantry: 12, archer: 7, cavalry: 5, siege: 1, commander: 1 };
-    if (chosenPlot === "sabotage") { fortress = 820; enemyMorale -= 12; }
+    empire.energy -= 2; if (chosenPlot === "bribe") empire.gold -= 240; saveEmpire(); updateEmpireUI();
+    const enemyConfig = { ...mission.enemy };
+    if (chosenPlot === "sabotage") { fortress = fortressMax * .82; enemyMorale -= 12; }
     if (chosenPlot === "bribe") { enemyConfig.infantry -= 3; enemyConfig.archer -= 1; }
-    addArmy("friendly", { infantry: 12, archer: 6, cavalry: 8, siege: 3, commander: 1 });
+    addArmy("friendly", { ...empire.troops });
     addArmy("enemy", enemyConfig);
     if (chosenPlot === "scout") units.filter(u => u.team === "friendly").forEach(u => u.bonus = 1.08);
     selectedKind = "infantry";
@@ -164,7 +342,7 @@
     showScreen("battle");
     document.querySelectorAll(".speed").forEach(b => b.classList.toggle("selected", b.dataset.speed === "1"));
     document.querySelectorAll(".unit-card").forEach(b => b.classList.toggle("selected", b.dataset.unit === selectedKind));
-    announce("Saflar hazır! Birlik seç veya hücum emri ver.", 2.1);
+    announce(`${mission.name} seferi başladı! Safları bozma.`, 2.1);
     tone(196, .4, "sawtooth", .08, 95); tone(131, .65, "triangle", .06, 70);
   }
 
@@ -586,13 +764,23 @@
   function finish(victory) {
     if (mode !== "battle") return;
     paused = true;
+    const mission = missions[currentMission];
     const score = Math.max(0, Math.round((victory ? 7000 : 1800) + enemyLosses * 95 + (MAX_TIME - elapsed) * 28 - friendlyLosses * 70));
+    const stars = victory ? (elapsed < 55 && friendlyLosses <= 8 ? 3 : elapsed < 78 ? 2 : 1) : 0;
+    pendingResult = { victory, stars, mission: currentMission, rewardFood: mission.rewardFood, rewardGold: mission.rewardGold };
+    if (victory) {
+      empire.missionStars[currentMission] = Math.max(empire.missionStars[currentMission] || 0, stars);
+      empire.unlockedMission = Math.min(missions.length - 1, Math.max(empire.unlockedMission, currentMission + 1)); saveEmpire();
+    }
     document.querySelector("#result-kicker").textContent = victory ? "ŞEHİR DÜŞTÜ" : "SEFER KIRILDI";
     document.querySelector("#result-title").textContent = victory ? "Fetih Tamamlandı" : "Ordu Geri Çekildi";
-    document.querySelector("#result-copy").textContent = victory ? "Surlar yarıldı, muhafızlar dağıldı. Konstantiniyye artık CİHAN sancağı altında." : "Sur kırılamadı. Divanı yeniden topla, başka bir entrika ve düzenle tekrar saldır.";
+    document.querySelector("#result-copy").textContent = victory ? `${mission.name} ele geçirildi. Bölgedeki CİHAN hâkimiyeti güçlendi.` : `${mission.name} savunması aşılamadı. Ordunu geliştirip başka bir düzenle tekrar saldır.`;
     document.querySelector("#result-time").textContent = `${String(Math.floor(elapsed / 60)).padStart(2, "0")}:${String(Math.floor(elapsed % 60)).padStart(2, "0")}`;
     document.querySelector("#result-losses").textContent = friendlyLosses;
     document.querySelector("#result-score").textContent = score.toLocaleString("tr-TR");
+    document.querySelector("#result-stars").textContent = stars ? `${"★ ".repeat(stars)}${"☆ ".repeat(3 - stars)}`.trim() : "☆ ☆ ☆";
+    document.querySelector("#result-loot").textContent = victory ? `+${number(mission.rewardFood)} ♨ · +${number(mission.rewardGold)} ●` : "Ganimet yok";
+    document.querySelector("#replay-button").textContent = victory ? "Ganimeti Al ve Şehre Dön" : "Orduyu Düzenle";
     document.querySelector(".result-seal").textContent = victory ? "☾" : "×";
     showScreen("result");
     if (victory) { tone(196, .35, "triangle", .07, 110); setTimeout(() => tone(262, .5, "triangle", .08, 130), 320); }
@@ -652,7 +840,13 @@
     formation = btn.dataset.formation; document.querySelectorAll(".formation").forEach(b => b.classList.toggle("selected", b === btn)); tone(220, .08, "triangle", .025, 40);
   }));
   document.querySelector("#start-battle").addEventListener("click", startBattle);
-  document.querySelector("#replay-button").addEventListener("click", () => showScreen("campaign"));
+  document.querySelector("#replay-button").addEventListener("click", () => {
+    if (pendingResult?.victory) {
+      empire.food += pendingResult.rewardFood; empire.gold += pendingResult.rewardGold; empire.wood += Math.round(pendingResult.rewardFood * .32); empire.energy = Math.min(10, empire.energy + 1);
+      saveEmpire(); updateEmpireUI(); showScreen("city"); showToast("Ganimet hazineye aktarıldı. Yeni sefer yolu açıldı!");
+    } else showScreen("army");
+    pendingResult = null;
+  });
   document.querySelectorAll(".unit-card").forEach(btn => btn.addEventListener("click", () => {
     selectedKind = btn.dataset.unit; document.querySelectorAll(".unit-card").forEach(b => b.classList.toggle("selected", b === btn));
     units.forEach(u => u.selected = u.team === "friendly" && !u.dead && u.kind === selectedKind); tone(230, .06, "triangle", .02, 35);
@@ -664,6 +858,25 @@
   }));
   document.querySelector("#pause-button").addEventListener("click", (event) => { paused = !paused; event.currentTarget.classList.toggle("selected", paused); announce(paused ? "Savaş duraklatıldı." : "Savaş devam ediyor.", 1.4); });
   document.querySelector("#sound-button").addEventListener("click", (event) => { soundOn = !soundOn; event.currentTarget.textContent = soundOn ? "♪" : "×"; if (soundOn) tone(240, .08); });
+
+  document.querySelectorAll("[data-nav]").forEach(btn => btn.addEventListener("click", () => { closeBuilding(); showScreen(btn.dataset.nav); tone(210, .06, "triangle", .018, 30); }));
+  document.querySelectorAll("[data-building]").forEach(btn => btn.addEventListener("click", () => openBuilding(btn.dataset.building)));
+  document.querySelectorAll("[data-close-sheet]").forEach(btn => btn.addEventListener("click", closeBuilding));
+  document.querySelector("#upgrade-building").addEventListener("click", upgradeBuilding);
+  document.querySelectorAll("[data-train]").forEach(btn => btn.addEventListener("click", () => trainTroops(btn.dataset.train)));
+  document.querySelectorAll("[data-decree]").forEach(btn => btn.addEventListener("click", () => applyDecree(btn.dataset.decree)));
+  document.querySelectorAll("[data-mission]").forEach(btn => btn.addEventListener("click", () => prepareMission(Number(btn.dataset.mission))));
+  document.querySelector("#collect-button").addEventListener("click", collectProduction);
+  document.querySelector("#quest-card").addEventListener("click", () => {
+    if (empire.buildings.barracks < 2) openBuilding("barracks");
+    else if (troopTotal() < 34) showScreen("army");
+    else prepareMission(empire.missionStars[0] ? 1 : 0);
+  });
+  document.querySelector(".lord-badge").addEventListener("click", () => showToast("Hükümdar Selin · Seviye 7 · Kudret " + number(armyPower())));
+  document.querySelectorAll(".hero-card").forEach(btn => btn.addEventListener("click", () => { btn.classList.toggle("active"); showToast(btn.classList.contains("active") ? "Kahraman sefer kadrosuna alındı." : "Kahraman yedeğe çekildi."); }));
+
+  recoverEnergy(); updateEmpireUI();
+  setInterval(() => { if (recoverEnergy()) updateEmpireUI(); }, 5000);
 
   function loop(now) {
     const dt = (now - last) / 1000; last = now;

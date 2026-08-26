@@ -6,109 +6,106 @@
   <meta name="theme-color" content="#071019">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>CİHAN: Tahtın Çağı · Canlı Kuşatma</title>
-  <meta name="description" content="CİHAN V31 Canlı Kuşatma: ilk saniyeden ilerle, gerçek zamanlı çatış ve surları yar.">
-  <link rel="stylesheet" href="./game.css?v=31">
+  <title>CİHAN: Tahtın Çağı · V32 İmparatorluk</title>
+  <meta name="description" content="CİHAN V32: şehrini geliştir, asker yetiştir, kahramanlarını hazırla, sefere çık ve gerçek zamanlı savaş.">
+  <link rel="stylesheet" href="./game.css?v=32">
 </head>
 <body>
-  <main id="game-shell" aria-label="CİHAN Canlı Kuşatma">
+  <main id="game-shell" aria-label="CİHAN: Tahtın Çağı">
     <canvas id="battlefield" width="1024" height="1536" aria-label="Canlı kuşatma savaş alanı"></canvas>
 
-    <section id="campaign" class="screen active" aria-labelledby="campaign-title">
-      <div class="campaign-top">
-        <p class="kicker">CİHAN V31 · MEYDAN ATEŞİ</p>
-        <h1 id="campaign-title">Tahtın Çağı</h1>
-        <p class="campaign-copy">Divanı topla, ordunu hazırla ve Konstantiniyye surlarına yürü.</p>
+    <header id="resource-bar" class="resource-bar" aria-label="İmparatorluk kaynakları">
+      <button class="lord-badge" type="button" aria-label="Hükümdar profili"><span>☾</span><b>SELİN</b><small>SV. 7</small></button>
+      <div class="resource"><span>♨</span><b id="food-value">6.200</b><small>ERZAK</small></div>
+      <div class="resource"><span>▥</span><b id="wood-value">4.800</b><small>ODUN</small></div>
+      <div class="resource"><span>◆</span><b id="stone-value">3.900</b><small>TAŞ</small></div>
+      <div class="resource gold"><span>●</span><b id="gold-value">1.250</b><small>ALTIN</small></div>
+      <div class="power"><small>KUDRET</small><b id="power-value">12.480</b></div>
+    </header>
+
+    <section id="city" class="screen active city-screen" aria-labelledby="city-title">
+      <div class="city-heading">
+        <p class="kicker">CİHAN V32 · İMPARATORLUK</p>
+        <h1 id="city-title">Payitaht</h1>
+        <p>Şehrini büyüt. Ordunu hazırla. Cihana hükmet.</p>
       </div>
-
-      <div class="province-card">
-        <div class="province-seal" aria-hidden="true">☾</div>
-        <div>
-          <span>HEDEF ŞEHİR</span>
-          <h2>Konstantiniyye</h2>
-          <p>Sur seviyesi 5 · Savunma 8.420 · Büyük ganimet</p>
-        </div>
-        <div class="threat">ZOR</div>
+      <button id="quest-card" class="quest-card" type="button"><span>ANA GÖREV</span><b id="quest-title">Kışlayı 2. seviyeye yükselt</b><i id="quest-progress">0 / 1</i></button>
+      <div class="building-field" aria-label="Şehir binaları">
+        <button class="building-pin palace" data-building="palace" type="button"><span>♜</span><b>Saray</b><small>Sv. <i data-level-for="palace">4</i></small></button>
+        <button class="building-pin barracks" data-building="barracks" type="button"><span>⚔</span><b>Kışla</b><small>Sv. <i data-level-for="barracks">1</i></small></button>
+        <button class="building-pin academy" data-building="academy" type="button"><span>✦</span><b>Akademi</b><small>Sv. <i data-level-for="academy">1</i></small></button>
+        <button class="building-pin market" data-building="market" type="button"><span>◈</span><b>Çarşı</b><small>Sv. <i data-level-for="market">2</i></small></button>
+        <button class="building-pin farm" data-building="farm" type="button"><span>♨</span><b>Çiftlik</b><small>Sv. <i data-level-for="farm">2</i></small></button>
+        <button class="building-pin quarry" data-building="quarry" type="button"><span>◆</span><b>Taş Ocağı</b><small>Sv. <i data-level-for="quarry">1</i></small></button>
       </div>
-
-      <div class="council-grid" aria-label="Harp Divanı kararları">
-        <button class="plot selected" data-plot="scout">
-          <span class="plot-icon">⌖</span><b>Casus Ağı</b><small>Düşman sayısı görünür<br>+%8 ilk vuruş</small>
-        </button>
-        <button class="plot" data-plot="sabotage">
-          <span class="plot-icon">♜</span><b>Sur Sabotajı</b><small>Sur -%18 dayanıklılık<br>Düşman moral -12</small>
-        </button>
-        <button class="plot" data-plot="bribe">
-          <span class="plot-icon">◆</span><b>Muhafızları Ayart</b><small>4 savunmacı çekilir<br>Hazine -240</small>
-        </button>
-      </div>
-
-      <div class="formation-row" aria-label="Savaş düzeni">
-        <button class="formation selected" data-formation="crescent">HİLAL</button>
-        <button class="formation" data-formation="line">HAT</button>
-        <button class="formation" data-formation="wedge">KAMA</button>
-      </div>
-
-      <button id="start-battle" class="war-button"><span>Kuşatmayı Başlat</span><small>ORDU 9.140 · MORAL 92</small></button>
-      <p class="original-note">Özgün tarihî strateji oyunu · Esinlenilmiş, birebir kopya değildir</p>
-    </section>
-
-    <section id="battle-ui" class="screen" aria-label="Savaş komutları">
-      <header class="battle-header">
-        <div class="side-score friendly"><span>ORDUN</span><b id="friendly-count">30</b><i id="friendly-morale">Moral 92</i></div>
-        <div class="battle-clock"><span id="phase-label">KONUŞLANMA</span><b id="battle-time">01:36</b></div>
-        <div class="side-score enemy"><span>MUHAFIZLAR</span><b id="enemy-count">26</b><i id="enemy-morale">Moral 84</i></div>
-      </header>
-
-      <div class="fortress-hud">
-        <div class="fortress-label"><span>SUR DAYANIKLILIĞI</span><b id="fortress-percent">100%</b></div>
-        <div class="fortress-track"><i id="fortress-fill"></i></div>
-      </div>
-
-      <div id="battle-message" class="battle-message">Birlik seç, savaş alanına dokun ve emir ver.</div>
-
-      <div class="speed-controls" aria-label="Savaş hızı">
-        <button id="pause-button" aria-label="Duraklat">Ⅱ</button>
-        <button class="speed selected" data-speed="1">1×</button>
-        <button class="speed" data-speed="2">2×</button>
-        <button class="speed" data-speed="3">3×</button>
-        <button id="sound-button" aria-label="Sesi aç veya kapat">♪</button>
-      </div>
-
-      <div class="unit-dock" aria-label="Birlik seçimi">
-        <button class="unit-card selected" data-unit="infantry"><i class="portrait row-0"></i><span>PİYADE</span><b id="infantry-count">12</b></button>
-        <button class="unit-card" data-unit="archer"><i class="portrait row-1"></i><span>OKÇU</span><b id="archer-count">6</b></button>
-        <button class="unit-card" data-unit="cavalry"><i class="portrait row-2"></i><span>SÜVARİ</span><b id="cavalry-count">8</b></button>
-        <button class="unit-card" data-unit="siege"><i class="portrait row-3"></i><span>ŞAHİ</span><b id="siege-count">3</b></button>
-        <button class="unit-card" data-unit="commander"><i class="portrait row-4"></i><span>PAŞA</span><b id="commander-count">1</b></button>
-      </div>
-
-      <nav class="command-dock" aria-label="Özel savaş emirleri">
-        <button class="command" data-command="charge"><span>⚔</span><b>HÜCUM</b><i class="cooldown"></i></button>
-        <button class="command" data-command="volley"><span>➶</span><b>OK YAĞMURU</b><i class="cooldown"></i></button>
-        <button class="command gold" data-command="cannon"><span>✹</span><b>ŞAHİ ATEŞİ</b><i class="cooldown"></i></button>
-        <button class="command" data-command="rally"><span>♜</span><b>SANCAĞA</b><i class="cooldown"></i></button>
+      <div class="city-event"><span>!</span><div><b>Halkın duası seninle</b><small>Üretim depoları dolmadan kaynakları topla.</small></div><button id="collect-button" type="button">TOPLA</button></div>
+      <nav class="game-nav" aria-label="Ana oyun menüsü">
+        <button class="nav-button selected" data-nav="city" type="button"><span>♜</span><b>ŞEHİR</b></button><button class="nav-button" data-nav="map" type="button"><span>⌖</span><b>SEFER</b></button><button class="nav-button" data-nav="army" type="button"><span>⚔</span><b>ORDU</b></button><button class="nav-button" data-nav="council" type="button"><span>✦</span><b>DİVAN</b></button>
       </nav>
     </section>
 
-    <section id="result" class="screen result-screen" aria-live="polite">
-      <div class="result-panel">
-        <p class="kicker" id="result-kicker">ŞEHİR DÜŞTÜ</p>
-        <h2 id="result-title">Fetih Tamamlandı</h2>
-        <div class="result-seal">☾</div>
-        <p id="result-copy">Surlar yarıldı, muhafızlar dağıldı. Konstantiniyye artık CİHAN sancağı altında.</p>
-        <div class="result-stats">
-          <div><span>SÜRE</span><b id="result-time">00:00</b></div>
-          <div><span>KAYIP</span><b id="result-losses">0</b></div>
-          <div><span>FETİH PUANI</span><b id="result-score">0</b></div>
-        </div>
-        <button id="replay-button" class="war-button">Yeniden Kuşat</button>
-        <a href="../">Ana sayfaya dön</a>
+    <section id="map" class="screen map-screen" aria-labelledby="map-title">
+      <header class="map-heading"><button class="back-button" data-nav="city" type="button">‹</button><div><p class="kicker">BÖLÜM I · BEREKETLİ HİLAL</p><h2 id="map-title">Fetih Seferi</h2><p><b id="campaign-stars">0</b> / 18 yıldız · Sandık: 6 ★</p></div></header>
+      <svg class="campaign-routes" viewBox="0 0 390 650" preserveAspectRatio="none" aria-hidden="true"><path d="M65 555 C120 510 95 445 163 405 S235 330 188 275 S260 190 315 142" /></svg>
+      <div class="mission-field" aria-label="Sefer görevleri">
+        <button class="mission-node current" data-mission="0" style="--x:16%;--y:76%" type="button"><span>1-1</span><b>Hudut Karakolu</b><small>⚔ 7.800</small></button>
+        <button class="mission-node locked" data-mission="1" style="--x:41%;--y:58%" type="button"><span>1-2</span><b>Dağ Geçidi</b><small>⚔ 10.500</small></button>
+        <button class="mission-node locked" data-mission="2" style="--x:58%;--y:43%" type="button"><span>1-3</span><b>Kartal Şehir</b><small>⚔ 13.200</small></button>
+        <button class="mission-node locked" data-mission="3" style="--x:45%;--y:28%" type="button"><span>1-4</span><b>Demirhisar</b><small>⚔ 16.900</small></button>
+        <button class="mission-node locked" data-mission="4" style="--x:76%;--y:16%" type="button"><span>1-5</span><b>Akdeniz Kapısı</b><small>⚔ 20.600</small></button>
       </div>
+      <div class="map-legend"><span>SEFER ENERJİSİ</span><b id="energy-value">8 / 10</b><i></i></div>
+      <nav class="game-nav" aria-label="Ana oyun menüsü"><button class="nav-button" data-nav="city" type="button"><span>♜</span><b>ŞEHİR</b></button><button class="nav-button selected" data-nav="map" type="button"><span>⌖</span><b>SEFER</b></button><button class="nav-button" data-nav="army" type="button"><span>⚔</span><b>ORDU</b></button><button class="nav-button" data-nav="council" type="button"><span>✦</span><b>DİVAN</b></button></nav>
     </section>
 
+    <section id="army" class="screen management-screen" aria-labelledby="army-title">
+      <header class="management-heading"><button class="back-button" data-nav="city" type="button">‹</button><div><p class="kicker">ORDU-YI HÜMAYUN</p><h2 id="army-title">Ordu ve Kahramanlar</h2><p>Birlikleri eğit, komutanlarını güçlendir.</p></div></header>
+      <div class="army-power-card"><small>TOPLAM ORDU KUDRETİ</small><b id="army-power">9.140</b><span>Moral 92 · Kapasite <i id="army-capacity">30 / 45</i></span></div>
+      <div class="section-label"><span>SEFER KADROSU</span><b>3 / 3</b></div>
+      <div class="hero-row"><button class="hero-card active" data-hero="orhan" type="button"><span class="hero-portrait hero-one">O</span><b>Orhan Paşa</b><small>Ön Saf · Sv. 7</small><i>⚔ 2.840</i></button><button class="hero-card active" data-hero="mihal" type="button"><span class="hero-portrait hero-two">M</span><b>Mihal Bey</b><small>Süvari · Sv. 6</small><i>⚔ 2.510</i></button><button class="hero-card active" data-hero="ayse" type="button"><span class="hero-portrait hero-three">A</span><b>Ayşe Hatun</b><small>Okçu · Sv. 6</small><i>⚔ 2.230</i></button></div>
+      <div class="section-label"><span>BİRLİKLER</span><b id="troop-total">30 asker</b></div>
+      <div class="training-list">
+        <article><div class="troop-icon row-0"></div><div><b>Kapıkulu Piyadesi</b><small>Ön saf · Kalkan duvarı</small></div><strong id="roster-infantry">12</strong><button data-train="infantry" type="button">+2<br><i>420 ♨</i></button></article>
+        <article><div class="troop-icon row-1"></div><div><b>Şahi Okçusu</b><small>Arka saf · Uzak menzil</small></div><strong id="roster-archer">6</strong><button data-train="archer" type="button">+2<br><i>360 ♨</i></button></article>
+        <article><div class="troop-icon row-2"></div><div><b>Akıncı Süvarisi</b><small>Kanat · Hat yarma</small></div><strong id="roster-cavalry">8</strong><button data-train="cavalry" type="button">+1<br><i>520 ♨</i></button></article>
+        <article><div class="troop-icon row-3"></div><div><b>Şahi Bataryası</b><small>Kuşatma · Sur yıkma</small></div><strong id="roster-siege">3</strong><button data-train="siege" type="button">+1<br><i>650 ◆</i></button></article>
+      </div>
+      <nav class="game-nav" aria-label="Ana oyun menüsü"><button class="nav-button" data-nav="city" type="button"><span>♜</span><b>ŞEHİR</b></button><button class="nav-button" data-nav="map" type="button"><span>⌖</span><b>SEFER</b></button><button class="nav-button selected" data-nav="army" type="button"><span>⚔</span><b>ORDU</b></button><button class="nav-button" data-nav="council" type="button"><span>✦</span><b>DİVAN</b></button></nav>
+    </section>
+
+    <section id="council" class="screen management-screen council-screen" aria-labelledby="council-title">
+      <header class="management-heading"><button class="back-button" data-nav="city" type="button">‹</button><div><p class="kicker">HARP DİVANI</p><h2 id="council-title">Devlet Meseleleri</h2><p>Her karar halkı, hazineyi ve seferi etkiler.</p></div></header>
+      <div class="vizier-card"><span>VEZİRİN RAPORU</span><b>Doğu hududunda hareketlilik var.</b><p>Demirhisar Beyi vergi göndermeyi reddetti. Elçi mi yollayalım, sınırı mı tahkim edelim?</p></div>
+      <div class="decree-list"><button data-decree="envoy" type="button"><span>✉</span><div><b>Elçi Gönder</b><small>Altın -180 · İtibar +8</small></div><i>›</i></button><button data-decree="fortify" type="button"><span>♜</span><div><b>Hududu Tahkim Et</b><small>Taş -260 · Savunma +10</small></div><i>›</i></button><button data-decree="raid" type="button"><span>⚔</span><div><b>Akın Emri Ver</b><small>Erzak -320 · Ganimet ihtimali</small></div><i>›</i></button></div>
+      <div class="realm-stats"><div><span>HALK</span><b id="people-stat">84</b></div><div><span>İTİBAR</span><b id="prestige-stat">61</b></div><div><span>SAVUNMA</span><b id="defence-stat">47</b></div></div>
+      <nav class="game-nav" aria-label="Ana oyun menüsü"><button class="nav-button" data-nav="city" type="button"><span>♜</span><b>ŞEHİR</b></button><button class="nav-button" data-nav="map" type="button"><span>⌖</span><b>SEFER</b></button><button class="nav-button" data-nav="army" type="button"><span>⚔</span><b>ORDU</b></button><button class="nav-button selected" data-nav="council" type="button"><span>✦</span><b>DİVAN</b></button></nav>
+    </section>
+
+    <section id="campaign" class="screen campaign-screen" aria-labelledby="campaign-title">
+      <button class="council-back back-button" data-nav="map" type="button">‹</button>
+      <div class="campaign-top"><p class="kicker">SEFER ÖNCESİ HARP DİVANI</p><h1 id="campaign-title">Hudut Karakolu</h1><p id="campaign-copy" class="campaign-copy">İsyancı kuvvetleri dağıt ve imparatorluğun yolunu aç.</p></div>
+      <div class="province-card"><div class="province-seal" aria-hidden="true">☾</div><div><span>HEDEF</span><h2 id="target-city">Hudut Karakolu</h2><p id="target-detail">Sur seviyesi 1 · Savunma 7.800 · Ganimet 900</p></div><div id="target-threat" class="threat">NORMAL</div></div>
+      <div class="council-grid" aria-label="Harp Divanı kararları"><button class="plot selected" data-plot="scout" type="button"><span class="plot-icon">⌖</span><b>Casus Ağı</b><small>Düşman sayısı görünür<br>+%8 ilk vuruş</small></button><button class="plot" data-plot="sabotage" type="button"><span class="plot-icon">♜</span><b>Sur Sabotajı</b><small>Sur -%18 dayanıklılık<br>Düşman moral -12</small></button><button class="plot" data-plot="bribe" type="button"><span class="plot-icon">◆</span><b>Muhafızları Ayart</b><small>4 savunmacı çekilir<br>Altın -240</small></button></div>
+      <div class="formation-row" aria-label="Savaş düzeni"><button class="formation selected" data-formation="crescent" type="button">HİLAL</button><button class="formation" data-formation="line" type="button">HAT</button><button class="formation" data-formation="wedge" type="button">KAMA</button></div>
+      <button id="start-battle" class="war-button" type="button"><span>Sefere Çık</span><small id="battle-power-label">ORDU 9.140 · ENERJİ -2</small></button><p class="original-note">Özgün tarihî strateji oyunu · Esinlenilmiş, birebir kopya değildir</p>
+    </section>
+
+    <section id="battle-ui" class="screen" aria-label="Savaş komutları">
+      <header class="battle-header"><div class="side-score friendly"><span>ORDUN</span><b id="friendly-count">30</b><i id="friendly-morale">Moral 92</i></div><div class="battle-clock"><span id="phase-label">KONUŞLANMA</span><b id="battle-time">01:36</b></div><div class="side-score enemy"><span>MUHAFIZLAR</span><b id="enemy-count">26</b><i id="enemy-morale">Moral 84</i></div></header>
+      <div class="fortress-hud"><div class="fortress-label"><span>SUR DAYANIKLILIĞI</span><b id="fortress-percent">100%</b></div><div class="fortress-track"><i id="fortress-fill"></i></div></div><div id="battle-message" class="battle-message">Birlik seç, savaş alanına dokun ve emir ver.</div>
+      <div class="speed-controls" aria-label="Savaş hızı"><button id="pause-button" aria-label="Duraklat">Ⅱ</button><button class="speed selected" data-speed="1">1×</button><button class="speed" data-speed="2">2×</button><button class="speed" data-speed="3">3×</button><button id="sound-button" aria-label="Sesi aç veya kapat">♪</button></div>
+      <div class="unit-dock" aria-label="Birlik seçimi"><button class="unit-card selected" data-unit="infantry"><i class="portrait row-0"></i><span>PİYADE</span><b id="infantry-count">12</b></button><button class="unit-card" data-unit="archer"><i class="portrait row-1"></i><span>OKÇU</span><b id="archer-count">6</b></button><button class="unit-card" data-unit="cavalry"><i class="portrait row-2"></i><span>SÜVARİ</span><b id="cavalry-count">8</b></button><button class="unit-card" data-unit="siege"><i class="portrait row-3"></i><span>ŞAHİ</span><b id="siege-count">3</b></button><button class="unit-card" data-unit="commander"><i class="portrait row-4"></i><span>PAŞA</span><b id="commander-count">1</b></button></div>
+      <nav class="command-dock" aria-label="Özel savaş emirleri"><button class="command" data-command="charge"><span>⚔</span><b>HÜCUM</b><i class="cooldown"></i></button><button class="command" data-command="volley"><span>➶</span><b>OK YAĞMURU</b><i class="cooldown"></i></button><button class="command gold" data-command="cannon"><span>✹</span><b>ŞAHİ ATEŞİ</b><i class="cooldown"></i></button><button class="command" data-command="rally"><span>♜</span><b>SANCAĞA</b><i class="cooldown"></i></button></nav>
+    </section>
+
+    <section id="result" class="screen result-screen" aria-live="polite">
+      <div class="result-panel"><p class="kicker" id="result-kicker">ŞEHİR DÜŞTÜ</p><h2 id="result-title">Fetih Tamamlandı</h2><div class="result-seal">☾</div><p id="result-copy">Surlar yarıldı, muhafızlar dağıldı.</p><div class="result-stars" id="result-stars">★ ★ ★</div><div class="result-stats"><div><span>SÜRE</span><b id="result-time">00:00</b></div><div><span>KAYIP</span><b id="result-losses">0</b></div><div><span>FETİH PUANI</span><b id="result-score">0</b></div></div><div class="loot-row"><span>GANİMET</span><b id="result-loot">+900 ♨ · +420 ●</b></div><button id="replay-button" class="war-button" type="button">Ganimeti Al ve Şehre Dön</button></div>
+    </section>
+
+    <aside id="building-sheet" class="game-sheet" aria-hidden="true"><button class="sheet-scrim" data-close-sheet type="button" aria-label="Pencereyi kapat"></button><div class="sheet-panel"><div class="sheet-handle"></div><button class="sheet-close" data-close-sheet type="button">×</button><span id="building-icon" class="sheet-icon">♜</span><p class="kicker">ŞEHİR YAPISI</p><h2 id="building-name">Saray</h2><p id="building-description">İmparatorluğun kalbi.</p><div class="building-stats"><div><span>SEVİYE</span><b id="building-level">4</b></div><div><span>ETKİ</span><b id="building-effect">Kapasite +45</b></div><div><span>SÜRE</span><b id="building-time">Anında</b></div></div><div class="cost-row"><span>YÜKSELTME BEDELİ</span><b id="building-cost">800 ♨ · 520 ▥ · 380 ◆</b></div><button id="upgrade-building" class="war-button" type="button">Seviyeyi Yükselt</button></div></aside>
+    <div id="toast" class="game-toast" role="status" aria-live="polite"></div>
     <div id="rotate-hint"><span>↻</span> En iyi deneyim için telefonu dik tut.</div>
   </main>
-  <script src="./game.js?v=31"></script>
+  <script src="./game.js?v=32"></script>
 </body>
 </html>
