@@ -1,7 +1,15 @@
-# CİHAN: Tahtın Çağı — V29 Canlı Kuşatma
+# CİHAN: Tahtın Çağı — V30 Çelik Saflar
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V30 Çelik Saflar
+
+- Birimler ölene kadar hedeflerine kilitlenir; hedefler arasında titreyip yön değiştirmez
+- Aynı saftaki askerler formasyon aralığını korur, yakın dövüşte birlikler birbirinin içine girmez
+- Süvari hücumu piyade hattını geriye savurur ve kısa süreli sersemletir
+- Yakın asker araması hücrelere bölünerek mobilde daha düşük işlem yüküyle çalışır
+- Savaş HUD'ı daha seyrek güncellenerek gereksiz mobil tarayıcı yükü azaltılmıştır
 
 ## V29 Canlı Kuşatma
 
@@ -14,7 +22,7 @@ grand-strategy prototipi.
 - Casus ağı, sur sabotajı ve muhafız ayartma kararlarının savaşa doğrudan etkisi
 - Bekleme, yürüme, saldırı, darbe ve ölüm pozları içeren 25 karelik özgün asker atlası
 
-[V29 Canlı Kuşatmayı oyna](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/)
+[V30 Çelik Saflar'ı oyna](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/)
 
 ## V28 Altın Sefer
 
@@ -131,7 +139,8 @@ grand-strategy prototipi.
 
 ## İndir
 
-- [V29 Canlı Kuşatma — iPhone, Android ve bilgisayar](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/)
+- [V30 Çelik Saflar — iPhone, Android ve bilgisayar](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/)
+- [Unity V30 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V30-Kaynak.zip)
 - [Android V28 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v28.apk)
 - [Unity V28 Altın Sefer güncellemesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-V28-Altin-Sefer-Guncellemesi.zip)
 - [Android V26 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v26.apk)

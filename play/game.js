@@ -40,7 +40,11 @@
   let screenShake = 0;
   let messageTimer = 0;
   let nextEnemyOrder = 8;
+  let nextUiUpdate = 0;
+  let nextFortressFeedback = 0;
+  let unitSerial = 0;
   let units = [];
+  let unitById = new Map();
   let projectiles = [];
   let particles = [];
   let floatingText = [];
@@ -122,24 +126,28 @@
     const p = formationPoint(index, count, team, kind);
     const enemyScale = team === "enemy" ? 1.03 : 1;
     return {
-      id: `${team}-${kind}-${index}-${Math.random()}`, team, kind, x: p.x + (Math.random() - .5) * 18, y: p.y + (Math.random() - .5) * 14,
+      id: ++unitSerial, team, kind, x: p.x + (Math.random() - .5) * 18, y: p.y + (Math.random() - .5) * 14,
       targetX: p.x, targetY: p.y, hp: s.hp * enemyScale, maxHp: s.hp * enemyScale, cooldown: Math.random() * s.rate,
       state: "idle", stateTime: 0, hit: 0, dead: false, fall: 0, selected: false, facing: team === "friendly" ? -1 : 1,
-      bonus: 1, order: "hold", lane: index % 3
+      bonus: 1, order: "hold", lane: index % 3, targetId: null, stagger: 0
     };
   }
 
   function addArmy(team, config) {
     Object.entries(config).forEach(([kind, count]) => {
-      for (let i = 0; i < count; i++) units.push(makeUnit(team, kind, i, count));
+      for (let i = 0; i < count; i++) {
+        const unit = makeUnit(team, kind, i, count);
+        units.push(unit);
+        unitById.set(unit.id, unit);
+      }
     });
   }
 
   function startBattle() {
     setupAudio();
-    units = []; projectiles = []; particles = []; floatingText = [];
+    units = []; unitById = new Map(); projectiles = []; particles = []; floatingText = [];
     elapsed = 0; friendlyLosses = 0; enemyLosses = 0; friendlyMorale = 92; enemyMorale = 84;
-    fortressMax = 1000; fortress = 1000; nextEnemyOrder = 7; paused = false; battleSpeed = 1;
+    fortressMax = 1000; fortress = 1000; nextEnemyOrder = 7; nextUiUpdate = 0; nextFortressFeedback = 0; paused = false; battleSpeed = 1;
     cooldowns = { charge: 0, volley: 0, cannon: 0, rally: 0 };
 
     let enemyConfig = { infantry: 12, archer: 7, cavalry: 5, siege: 1, commander: 1 };
@@ -168,16 +176,45 @@
     return { unit: best, distance: Math.sqrt(bestD) };
   }
 
-  function projectile(from, to, kind, damage, team) {
-    const duration = kind === "cannon" ? .7 : .38;
-    projectiles.push({ kind, team, fromX: from.x, fromY: from.y - 32, x: from.x, y: from.y - 32, tx: to.x, ty: to.y - 24, target: to, damage, t: 0, duration });
+  function combatTarget(unit) {
+    const locked = unitById.get(unit.targetId);
+    if (locked && !locked.dead && locked.team !== unit.team) {
+      return { unit: locked, distance: Math.hypot(locked.x - unit.x, locked.y - unit.y) };
+    }
+    const nearest = nearestEnemy(unit);
+    unit.targetId = nearest.unit ? nearest.unit.id : null;
+    return nearest;
   }
 
-  function hit(target, damage, sourceTeam, heavy = false) {
+  function fortressPost(unit, fortressOpen) {
+    const column = (unit.id - 1) % 8;
+    const rank = Math.floor(((unit.id - 1) % 32) / 8);
+    const x = 210 + column * 86;
+    if (fortressOpen) return { x, y: 315 + rank * 46 };
+    if (unit.kind === "siege") return { x, y: 735 + rank * 30 };
+    if (unit.kind === "archer") return { x, y: 635 + rank * 36 };
+    return { x, y: 482 + rank * 48 };
+  }
+
+  function projectile(from, to, kind, damage, team) {
+    const duration = kind === "cannon" ? .7 : .38;
+    projectiles.push({ kind, team, sourceId: from.id, fromX: from.x, fromY: from.y - 32, x: from.x, y: from.y - 32, tx: to.x, ty: to.y - 24, target: to, damage, t: 0, duration });
+  }
+
+  function hit(target, damage, sourceTeam, heavy = false, source = null) {
     if (!target || target.dead) return;
     const morale = sourceTeam === "friendly" ? friendlyMorale : enemyMorale;
     const finalDamage = damage * (.82 + morale / 480) * (.9 + Math.random() * .22);
     target.hp -= finalDamage; target.hit = .3; target.state = "hit"; target.stateTime = 0;
+    if (source && source.kind === "cavalry" && source.order === "charge" && target.kind !== "siege") {
+      let dx = target.x - source.x, dy = target.y - source.y;
+      let distance = Math.hypot(dx, dy);
+      if (distance < .001) { dx = source.team === "friendly" ? 1 : -1; dy = 0; distance = 1; }
+      target.x += dx / distance * 26;
+      target.y += dy / distance * 14;
+      target.stagger = Math.max(target.stagger, .24);
+      burst(target.x, target.y - 15, 9, "#dfbd78");
+    }
     floatingText.push({ x: target.x, y: target.y - 64, text: `-${Math.round(finalDamage)}`, color: heavy ? "#ffc96b" : "#fff1c4", life: .75 });
     burst(target.x, target.y - 18, heavy ? 16 : 5, heavy ? "#e6a743" : "#cfbf92");
     if (target.hp <= 0) {
@@ -199,9 +236,12 @@
   function damageFortress(amount, atX = 512) {
     if (fortress <= 0) return;
     fortress = Math.max(0, fortress - amount);
-    floatingText.push({ x: atX, y: FORTRESS_Y + 20, text: `SUR -${Math.round(amount)}`, color: "#ffd16d", life: 1.1 });
-    burst(atX, FORTRESS_Y + 40, 28, "#bc8b51");
-    screenShake = Math.max(screenShake, 12);
+    if (elapsed >= nextFortressFeedback || fortress === 0) {
+      nextFortressFeedback = elapsed + .22;
+      floatingText.push({ x: atX, y: FORTRESS_Y + 20, text: `SUR -${Math.round(amount)}`, color: "#ffd16d", life: 1.1 });
+      burst(atX, FORTRESS_Y + 40, 18, "#bc8b51");
+      screenShake = Math.max(screenShake, 10);
+    }
     if (fortress === 0) {
       announce("SUR YARILDI! Son hücum!", 4);
       tone(110, .8, "sawtooth", .12, 180); noise(.8, .17);
@@ -220,7 +260,7 @@
       if (attacker.team === "friendly") damageFortress(13 + Math.random() * 8, target.x);
       noise(.28, .08); screenShake = 5;
     } else {
-      hit(target, damage, attacker.team, attacker.kind === "cavalry");
+      hit(target, damage, attacker.team, attacker.kind === "cavalry", attacker);
       if (Math.random() < .18) tone(80 + Math.random() * 70, .07, "square", .018, -40);
     }
   }
@@ -228,25 +268,33 @@
   function updateUnit(unit, dt) {
     if (unit.dead) { unit.fall = Math.min(1, unit.fall + dt * 2.4); return; }
     unit.cooldown -= dt; unit.hit = Math.max(0, unit.hit - dt); unit.stateTime += dt;
+    unit.stagger = Math.max(0, unit.stagger - dt);
+    if (unit.stagger > 0) { unit.state = "hit"; return; }
     const s = stats[unit.kind];
-    const near = nearestEnemy(unit);
+    const near = combatTarget(unit);
     const fortressOpen = fortress <= 0;
     let tx = unit.targetX, ty = unit.targetY;
+    const orderDistance = Math.hypot(unit.targetX - unit.x, unit.targetY - unit.y);
+    const obeyingMoveOrder = unit.order === "move" && orderDistance > 22;
 
-    if (unit.team === "friendly" && !near.unit) { tx = 512 + (unit.lane - 1) * 90; ty = fortressOpen ? 330 : FORTRESS_Y + 90; }
+    if (unit.team === "friendly" && !near.unit) {
+      const post = fortressPost(unit, fortressOpen);
+      tx = post.x; ty = post.y;
+    }
     if (unit.team === "enemy" && !near.unit) { tx = unit.x; ty = unit.y; }
-    if (near.unit && (unit.order === "charge" || near.distance < s.range + 150 || elapsed > 13)) { tx = near.unit.x; ty = near.unit.y; }
+    if (near.unit && !obeyingMoveOrder && (unit.order === "charge" || near.distance < s.range + 150 || elapsed > 13)) { tx = near.unit.x; ty = near.unit.y; }
 
     const dx = tx - unit.x, dy = ty - unit.y;
     const dist = Math.hypot(dx, dy);
     const attackRange = s.range + (near.unit ? stats[near.unit.kind].size * .16 : 0);
-    if (near.unit && near.distance <= attackRange) {
+    if (near.unit && !obeyingMoveOrder && near.distance <= attackRange) {
       if (unit.cooldown <= 0) attack(unit, near.unit);
       if (unit.hit <= 0 && unit.stateTime > .32) unit.state = "idle";
       return;
     }
 
-    if (unit.team === "friendly" && !near.unit && unit.y <= FORTRESS_Y + 110 && fortress > 0) {
+    const fortressAttackLine = unit.kind === "siege" ? 770 : unit.kind === "archer" ? 670 : 590;
+    if (unit.team === "friendly" && !near.unit && unit.y <= fortressAttackLine && fortress > 0) {
       if (unit.cooldown <= 0) {
         unit.cooldown = Math.max(.65, s.rate);
         unit.state = "attack"; unit.stateTime = 0;
@@ -262,7 +310,53 @@
       unit.x = Math.max(52, Math.min(W - 52, unit.x)); unit.y = Math.max(300, Math.min(H - 210, unit.y));
       unit.facing = dx >= 0 ? 1 : -1;
       if (unit.hit <= 0) unit.state = "walk";
-    } else if (unit.hit <= 0 && unit.state !== "attack") unit.state = "idle";
+    } else {
+      if (unit.order === "move") unit.order = "hold";
+      if (unit.hit <= 0 && unit.state !== "attack") unit.state = "idle";
+    }
+  }
+
+  function resolveUnitSpacing(dt) {
+    const cellSize = 128;
+    const buckets = new Map();
+    for (const unit of units) {
+      if (unit.dead) continue;
+      const cellX = Math.floor(unit.x / cellSize), cellY = Math.floor(unit.y / cellSize);
+      const key = `${cellX}:${cellY}`;
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key).push(unit);
+    }
+
+    const response = Math.min(1, dt * 16);
+    for (const unit of units) {
+      if (unit.dead) continue;
+      const cellX = Math.floor(unit.x / cellSize), cellY = Math.floor(unit.y / cellSize);
+      for (let offsetX = -1; offsetX <= 1; offsetX++) {
+        for (let offsetY = -1; offsetY <= 1; offsetY++) {
+          const nearby = buckets.get(`${cellX + offsetX}:${cellY + offsetY}`);
+          if (!nearby) continue;
+          for (const other of nearby) {
+            if (other.dead || other.id <= unit.id) continue;
+            const sameTeam = other.team === unit.team;
+            const baseDistance = (stats[unit.kind].size + stats[other.kind].size) * .38;
+            const minimumDistance = sameTeam ? baseDistance : baseDistance * .72;
+            let dx = unit.x - other.x, dy = unit.y - other.y;
+            let distance = Math.hypot(dx, dy);
+            if (distance >= minimumDistance) continue;
+            if (distance < .001) {
+              const angle = ((unit.id * 37 + other.id * 17) % 360) * Math.PI / 180;
+              dx = Math.cos(angle); dy = Math.sin(angle); distance = 1;
+            }
+            const correction = (minimumDistance - distance) * response * (sameTeam ? .52 : .38);
+            const pushX = dx / distance * correction, pushY = dy / distance * correction;
+            unit.x = Math.max(52, Math.min(W - 52, unit.x + pushX));
+            unit.y = Math.max(300, Math.min(H - 210, unit.y + pushY));
+            other.x = Math.max(52, Math.min(W - 52, other.x - pushX));
+            other.y = Math.max(300, Math.min(H - 210, other.y - pushY));
+          }
+        }
+      }
+    }
   }
 
   function updateProjectiles(dt) {
@@ -271,7 +365,7 @@
       p.x = p.fromX + (p.tx - p.fromX) * q; p.y = p.fromY + (p.ty - p.fromY) * q - arc;
       if (q >= 1 && !p.done) {
         p.done = true;
-        if (p.target && !p.target.dead) hit(p.target, p.damage, p.team, p.kind === "cannon");
+        if (p.target && !p.target.dead) hit(p.target, p.damage, p.team, p.kind === "cannon", unitById.get(p.sourceId));
         if (p.kind === "cannon") { burst(p.tx, p.ty, 24, "#d3944d"); screenShake = 9; noise(.35, .11); }
       }
     }
@@ -285,7 +379,7 @@
     alive.forEach((u, i) => {
       u.order = "charge";
       const target = friends[(i * 5 + commandRevision) % friends.length];
-      u.targetX = target.x; u.targetY = target.y;
+      u.targetX = target.x; u.targetY = target.y; u.targetId = target.id;
     });
     if (Math.random() < .55) {
       const archers = alive.filter(u => u.kind === "archer");
@@ -303,6 +397,7 @@
     if (messageTimer <= 0) ui.message.classList.remove("show");
     Object.keys(cooldowns).forEach(k => cooldowns[k] = Math.max(0, cooldowns[k] - dt));
     units.forEach(u => updateUnit(u, dt));
+    resolveUnitSpacing(dt);
     updateProjectiles(dt);
     particles.forEach(p => { p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += 150 * dt; p.vx *= .985; });
     particles = particles.filter(p => p.life > 0);
@@ -315,7 +410,10 @@
     if (friendlyAlive === 0) finish(false);
     else if (enemyAlive === 0 && fortress <= 0) finish(true);
     else if (elapsed >= MAX_TIME) finish(enemyAlive === 0 && fortress <= 0);
-    updateUI(friendlyAlive, enemyAlive);
+    if (elapsed >= nextUiUpdate) {
+      nextUiUpdate = elapsed + .08;
+      updateUI(friendlyAlive, enemyAlive);
+    }
   }
 
   function phaseName(enemyAlive) {
@@ -446,7 +544,7 @@
     const friends = units.filter(u => u.team === "friendly" && !u.dead);
     const enemies = units.filter(u => u.team === "enemy" && !u.dead);
     if (command === "charge") {
-      cooldowns.charge = 11; friends.forEach((u, i) => { u.order = "charge"; u.bonus = Math.max(u.bonus, 1.16); if (enemies.length) { const t = enemies[(i * 3) % enemies.length]; u.targetX = t.x; u.targetY = t.y; } });
+      cooldowns.charge = 11; friends.forEach((u, i) => { u.order = "charge"; u.bonus = Math.max(u.bonus, 1.16); if (enemies.length) { const t = enemies[(i * 3) % enemies.length]; u.targetX = t.x; u.targetY = t.y; u.targetId = t.id; } });
       friendlyMorale = Math.min(100, friendlyMorale + 5); announce("Cihan için hücum! Bütün hatlar ileri!", 2.5); tone(180, .42, "sawtooth", .09, 120);
     }
     if (command === "volley") {
@@ -478,7 +576,7 @@
       const cols = Math.ceil(Math.sqrt(group.length)); const col = i % cols, row = Math.floor(i / cols);
       u.targetX = Math.max(55, Math.min(W - 55, p.x + (col - (cols - 1) / 2) * 58));
       u.targetY = Math.max(300, Math.min(H - 230, p.y + row * 43));
-      u.order = p.y < u.y - 100 ? "charge" : "move"; u.selected = true;
+      u.order = p.y < u.y - 100 ? "charge" : "move"; u.targetId = null; u.selected = true;
     });
     units.filter(u => u.team === "friendly" && u.kind !== selectedKind).forEach(u => u.selected = false);
     burst(p.x, p.y, 9, "#f2c96e"); announce(`${unitLabels[selectedKind]} birliğine yürüyüş emri verildi.`, 1.4); tone(260, .08, "triangle", .025, 50);
