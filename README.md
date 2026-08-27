@@ -1,7 +1,16 @@
-# CİHAN: Tahtın Çağı — V32 İmparatorluk
+# CİHAN: Tahtın Çağı — V33 Yaşayan Fetih
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V33 Yaşayan Fetih
+
+- Oyun doğrudan dokunulabilir, yaşayan 3B Payitaht ekranında açılır.
+- Statik sefer görseli yerine döndürülebilir ve yakınlaştırılabilir 3B dünya bulunur.
+- KayKit piyade ve okçularından oluşan animasyonlu ordu seçilen hedefe yürür.
+- Hedef seçimi, Harp Divanı planı, kuşatma ve sonuç tek oyun döngüsüne bağlanmıştır.
+- Zafer ganimeti Payitaht’a taşınır; yenilgide oyuncu yeni düzen kurmak için Ordugâh’a döner.
+- Android 0.33.0 / build 330; ARMv7 ve ARM64; Android 8.0+.
 
 ## V32 İmparatorluk
 
@@ -156,6 +165,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V33 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v33.apk)
+- [Unity V33 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V33-Kaynak.zip)
 - [V32 İmparatorluk — iPhone, Android ve bilgisayar](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/?v=32)
 - [Unity V30 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V30-Kaynak.zip)
 - [Android V28 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v28.apk)
