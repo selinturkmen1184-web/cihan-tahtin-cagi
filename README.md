@@ -1,7 +1,17 @@
-# CİHAN: Tahtın Çağı — V33 Yaşayan Fetih
+# CİHAN: Tahtın Çağı — V34 Komuta Edilebilir Kuşatma
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V34 Komuta Edilebilir Kuşatma
+
+- Piyade, okçu, süvari ve Şahi mangaları savaş HUD’undan doğrudan seçilir.
+- Boş araziye dokunulduğunda seçili manga verilen noktaya yürür.
+- Düşmana dokunulduğunda manga hedefe kilitlenir, takip eder ve saldırır.
+- Kale kapısına dokunulduğunda sur hücumu başlar; Şahi birlikleri suru yıkar.
+- Yürüyüş, saldırı ve kuşatma emirleri savaş alanında 3B hedef işaretleriyle gösterilir.
+- Birlikler emir yolunda düşmanla karşılaşınca savaşır ve hat temizlenince ilerlemeyi sürdürür.
+- Android 0.34.0 / build 340; ARMv7 ve ARM64; Android 8.0+.
 
 ## V33 Yaşayan Fetih
 
@@ -165,6 +175,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V34 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v34.apk)
+- [Unity V34 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V34-Kaynak.zip)
 - [Android V33 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v33.apk)
 - [Unity V33 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V33-Kaynak.zip)
 - [V32 İmparatorluk — iPhone, Android ve bilgisayar](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/?v=32)
