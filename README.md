@@ -1,7 +1,17 @@
-# CİHAN: Tahtın Çağı — V36 Günışığı Seferi
+# CİHAN: Tahtın Çağı — V37 Sinematik Kuşatma
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V37 Sinematik Kuşatma
+
+- Kamera, oyuncu dokunmadığında savaşın en sıcak noktasını otomatik takip eder.
+- Hücum, ok yağmuru, Şahi ateşi, burç ele geçirme ve sur yarılması anlarında sinematik odak değişir.
+- İlk Kan, Çifte Darbe, Ezici Üstünlük, Burç Ele Geçirildi ve Son Hücum anonsları gerçek zamanlı gösterilir.
+- Görev çizgisi iki burcu, sur dayanıklılığını ve kale beyi sağlığını aynı anda izler.
+- 54. saniyede kale beyinin seçkin süvari ve muhafız karşı taarruzu başlar.
+- Yeni özgün aydınlık kuşatma görseli savaş meclisine ve 3B meydan ufkuna bağlandı.
+- Android 0.37.0 / build 370; Android 8.0+.
 
 ## V36 Günışığı Seferi
 
@@ -193,6 +203,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V37 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v37.apk)
+- [Unity V37 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V37-Kaynak.zip)
 - [Android V36 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v36.apk)
 - [Unity V36 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V36-Kaynak.zip)
 - [Android V34 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v34.apk)
