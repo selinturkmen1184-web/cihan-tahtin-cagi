@@ -1,7 +1,16 @@
-# CİHAN: Tahtın Çağı — V37 Sinematik Kuşatma
+# CİHAN: Tahtın Çağı — V38 Gerçekçi Kuşatma
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V38 Gerçekçi Kuşatma
+
+- Blok kale yerine ayrıntılı, gerçekçi Karacahisar kapısı kullanılır.
+- Kırmızı hedef halkaları gerçek kuşatma karargâhlarına dönüştürüldü.
+- Dokunma emirleri zemine dikilen savaş sancağıyla gösterilir.
+- Askerlerin üzerindeki büyük güç kutuları kaldırıldı; yalnızca gerekli ince can çizgileri kaldı.
+- Yapay daire efektleri doğal toz ve darbe tepkileriyle değiştirildi.
+- Android 0.38.0 / build 380; Android 8.0+.
 
 ## V37 Sinematik Kuşatma
 
@@ -203,6 +212,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V38 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v38.apk)
+- [Unity V38 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V38-Kaynak.zip)
 - [Android V37 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v37.apk)
 - [Unity V37 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V37-Kaynak.zip)
 - [Android V36 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v36.apk)
