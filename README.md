@@ -1,7 +1,25 @@
-# CİHAN: Tahtın Çağı — V34 Komuta Edilebilir Kuşatma
+# CİHAN: Tahtın Çağı — V36 Günışığı Seferi
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V36 Günışığı Seferi
+
+- Savaş alanı yeni, özgün günışığı zemin dokusuyla sıcak kum ve açık taş paletine taşındı.
+- Kale, asker zırhları, sancaklar ve çevre malzemeleri daha aydınlık ve daha renkli hâle getirildi.
+- Ana güneş, dolgu ışığı, altın kenar ışığı, çevre ışığı ve sis ayarları mobil okunabilirlik için yenilendi.
+- Savaş arayüzü, manga düğmeleri, hedef halkaları ve ilerleme göstergeleri daha parlak ve anlaşılır oldu.
+- V35’in Sol Burç / Sağ Burç alan hâkimiyeti, canlı manga emirleri, çarpışma ve kale hasarı sistemleri korunarak görsel sahneye bağlandı.
+- Android 0.36.0 / build 360; Android 8.0+.
+
+## V35 Burçların Fethi
+
+- Sol Burç ve Sağ Burç artık 3B savaş alanında ele geçirilebilir kuşatma hedefleridir.
+- Birlikler hedef halkasında üstünlük kurdukça ele geçirme yüzdesi gerçek zamanlı yükselir; düşman baskısı ilerlemeyi durdurabilir veya geriletebilir.
+- Her ele geçirilen burç düşman moralini kırar, oyuncu moralini yükseltir ve kaleye doğrudan hasar verir.
+- Burç hâkimiyeti sonraki normal kuşatma ve Şahi topu hasarını güçlendirir.
+- Bayrak, halka, ilerleme diski, savaş HUD’u ve sonuç raporu burç durumunu anlık gösterir.
+- Android 0.35.0 / build 350; ARMv7 ve ARM64; Android 8.0+.
 
 ## V34 Komuta Edilebilir Kuşatma
 
@@ -175,6 +193,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V36 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v36.apk)
+- [Unity V36 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V36-Kaynak.zip)
 - [Android V34 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v34.apk)
 - [Unity V34 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V34-Kaynak.zip)
 - [Android V33 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v33.apk)
