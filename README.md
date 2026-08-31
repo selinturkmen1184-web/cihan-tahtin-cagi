@@ -1,7 +1,15 @@
-# CİHAN: Tahtın Çağı — V38 Gerçekçi Kuşatma
+# CİHAN: Tahtın Çağı — V39 İmparatorluk Teması
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V39 İmparatorluk Teması
+
+- Savaş ekranına şeffaf merkezli, oyma altın ve lacivert imparatorluk çerçevesi eklendi.
+- Düz komut düğmeleri eskitilmiş deri, bronz perçin, altın kakma ve kızıl kumaş ayrıntılı plakalara dönüştürüldü.
+- Aynı düğme dili başkent, ordu, komutan, harita ve ittifak ekranlarına bağlandı.
+- Savaş görüntüsü 1080×1536 çözünürlükte oluşturulur.
+- Android 0.39.0 / build 390; Android 8.0+.
 
 ## V38 Gerçekçi Kuşatma
 
@@ -212,6 +220,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V39 APK](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v39/Cihan-Tahtin-Cagi-v39.apk)
+- [Unity V39 kaynak projesi](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v39/Cihan-Tahtin-Cagi-Unity-V39-Kaynak.zip)
 - [Android V38 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v38.apk)
 - [Unity V38 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V38-Kaynak.zip)
 - [Android V37 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v37.apk)
