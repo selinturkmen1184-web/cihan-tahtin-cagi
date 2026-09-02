@@ -1,7 +1,15 @@
-# CİHAN: Tahtın Çağı — V40 Gerçek 3B Kuşatma
+# CİHAN: Tahtın Çağı — V41 Yaşayan İmparatorluk
 
 Android ve iPhone için Unity 6000.0 ile geliştirilen özgün tarihî mobil
 grand-strategy prototipi.
+
+## V41 Yaşayan İmparatorluk
+
+- Yeni, yüksek ayrıntılı ve aydınlık başkent sahnesi doğrudan bina seçimi, üretim toplama ve geliştirme emirlerine bağlandı.
+- Yeni fetih haritasında on iki bölge, ordu yürüyüşü, sefer kilitleri ve kalıcı bölge hâkimiyeti birlikte çalışır.
+- Başkent, ordugâh, komutanlar, Harp Divanı ve 3B kuşatma tek kalıcı oyun döngüsüdür.
+- Oyun web tarayıcısında çalışmaz; Android uygulaması olarak kurulur ve iPhone için yerel iOS/TestFlight paketi hazırlanır.
+- Android 0.41.0 / build 410; Android 8.0+.
 
 ## V40 Gerçek 3B Kuşatma
 
@@ -67,15 +75,14 @@ grand-strategy prototipi.
 - Zafer ganimeti Payitaht’a taşınır; yenilgide oyuncu yeni düzen kurmak için Ordugâh’a döner.
 - Android 0.33.0 / build 330; ARMv7 ve ARM64; Android 8.0+.
 
-## V32 İmparatorluk
+## V32 İmparatorluk — Arşiv
 
-- Kaynak üreten ve kaydı tarayıcıda korunan yaşayan Payitaht ekranı.
+- Önceki tarayıcı denemesi arşivlenmiştir; V41 ile birlikte herkese açık web oynanışı kaldırılmıştır.
 - Dokunulabilir Saray, Kışla, Akademi, Çarşı, Çiftlik ve Taş Ocağı; gerçek maliyetle yükseltme.
 - Piyade, okçu, süvari ve Şahi eğitimi; kapasite ve ordu kudreti.
 - Üç kahramanlı sefer kadrosu ve devlet değerlerini etkileyen Divan kararları.
 - Kilit açılan beş görevli sefer haritası, yıldız sistemi, enerji ve savaş ganimeti.
 - V31 gerçek zamanlı kuşatma sistemi şehir–gelişim–sefer döngüsüne bağlandı.
-- Özgün şehir ve sefer haritası görselleri: `play/city-v32.jpg`, `play/campaign-map-v32.jpg`.
 
 ## V31 Meydan Ateşi
 
@@ -94,7 +101,7 @@ grand-strategy prototipi.
 
 ## V29 Canlı Kuşatma
 
-- iPhone Safari, Android ve bilgisayarda kurulum gerektirmeden oynanabilen savaş dilimi
+- Önceki tarayıcı tabanlı savaş denemesi
 - Seçilebilir piyade, okçu, süvari, Şahi topçusu ve komutan birlikleri
 - Savaş alanına dokunarak yürüyüş ve hedef emri verme
 - Hücum, ok yağmuru, Şahi ateşi ve sancağa toplanma komutları
@@ -102,8 +109,6 @@ grand-strategy prototipi.
 - Gerçek sur dayanıklılığı, sur yarılması, son hücum ve fetih/yenilgi sonucu
 - Casus ağı, sur sabotajı ve muhafız ayartma kararlarının savaşa doğrudan etkisi
 - Bekleme, yürüme, saldırı, darbe ve ölüm pozları içeren 25 karelik özgün asker atlası
-
-[V32 İmparatorluk'u oyna](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/?v=32)
 
 ## V28 Altın Sefer
 
@@ -220,6 +225,8 @@ grand-strategy prototipi.
 
 ## İndir
 
+- [Android V41 APK](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v41/Cihan-Tahtin-Cagi-v41.apk)
+- [Unity V41 kaynak projesi](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v41/Cihan-Tahtin-Cagi-Unity-V41-Kaynak.zip)
 - [Android V40 APK](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v40/Cihan-Tahtin-Cagi-v40.apk)
 - [Unity V40 kaynak projesi](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v40/Cihan-Tahtin-Cagi-Unity-V40-Kaynak.zip)
 - [Android V39 APK](https://github.com/selinturkmen1184-web/cihan-tahtin-cagi/releases/download/v39/Cihan-Tahtin-Cagi-v39.apk)
@@ -234,7 +241,6 @@ grand-strategy prototipi.
 - [Unity V34 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V34-Kaynak.zip)
 - [Android V33 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v33.apk)
 - [Unity V33 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V33-Kaynak.zip)
-- [V32 İmparatorluk — iPhone, Android ve bilgisayar](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/play/?v=32)
 - [Unity V30 kaynak projesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-Unity-V30-Kaynak.zip)
 - [Android V28 APK](https://selinturkmen1184-web.github.io/cihan-tahtin-cagi/downloads/Cihan-Tahtin-Cagi-v28.apk)
 - [Unity V28 Altın Sefer güncellemesi](https://raw.githubusercontent.com/selinturkmen1184-web/cihan-tahtin-cagi/main/Cihan-Tahtin-Cagi-V28-Altin-Sefer-Guncellemesi.zip)

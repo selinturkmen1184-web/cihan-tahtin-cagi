@@ -133,7 +133,7 @@ a {
       rgba(7, 16, 24, 0.08) 100%
     ),
     linear-gradient(0deg, rgba(7, 16, 24, 0.9) 0%, rgba(7, 16, 24, 0) 45%),
-    url("./cihan-battle-briefing-v37.png") center 58% / cover no-repeat;
+    url("./cihan-v41-capital.png") center 54% / cover no-repeat;
   display: grid;
   min-height: 100svh;
   overflow: hidden;
@@ -672,7 +672,7 @@ blockquote {
 }
 
 .capital-section {
-  background-image: url("./capital-preview-v26.png");
+  background-image: url("./cihan-v41-capital.png");
   display: flex;
   min-height: 900px;
 }
@@ -915,7 +915,7 @@ blockquote {
   align-items: center;
   background:
     linear-gradient(90deg, rgba(7, 16, 24, 0.98), rgba(7, 16, 24, 0.7)),
-    url("./world-preview-v26.png") center 58% / cover no-repeat;
+    url("./cihan-v41-campaign.png") center 58% / cover no-repeat;
   display: grid;
   gap: clamp(3rem, 8vw, 8rem);
   grid-template-columns: minmax(0, 1fr) minmax(330px, 0.72fr);
